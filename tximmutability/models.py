@@ -25,33 +25,34 @@ class ImmutableModel(models.Model):
                 raise TypeError('%s: immutability rule item has to be ImmutabilityRule type'
                                 % self.Meta.verbose_name)
 
-    def update(self, validated_data, **kwargs):
+    def update(self, validated_data, force=False, save_kwargs={}):
         """
         Set each attribute on the instance, and then save it.
         In case of error, accumulate them and after checking all fields
         raise an ValidationError with all error messages
         :param validated_data: {{*}}
-        :param kwargs: 
+        :param force: bool if update need to be forced 
+        :param save_kwargs: kwargs params passed to django save method
         :raise: ValidationError 
         """
         errors = {}
         for field, value in validated_data.items():
             try:
-                self.update_attribute(field, value, **kwargs)
+                self.update_attribute(field, value, force=force)
             except ValidationError as exc:
                 errors[field] = exc.detail
         if errors:
             raise ValidationError(errors)
-        self.save()
+        self.save(**save_kwargs)
 
-    def update_attribute(self, name, value, **kwargs):
+    def update_attribute(self, name, value, force=False):
         """
         Update attribute value only after checking its mutability
         To force update set parameter force to True 
         :param name: attribute name
         :param value: new attribute value
         """
-        if not kwargs.get('force', False):
+        if not force:
             self.check_mutability(name)
         setattr(self, name, value)
 
