@@ -12,7 +12,8 @@ class ImmutabilityRule(object):
     of the model from which depend model immutability. To define relation field use '__' as separator
 
     Once field value is defined model becomes immutable(you can not update it or delete it).
-    To allow update/delete of the object set param allow_update/allow_delete to True
+    To allow update/delete of the object set param allow_update/allow_delete to True.
+    By default immutable object can be created. To forbid creation set allow_create to False
 
     To allow object mutability for the specific field's values
     define that values in mutable_states param
@@ -23,44 +24,22 @@ class ImmutabilityRule(object):
     Examples:
         - Only invoice note can be changed if invoice is not in draft state.
         ImmutabilityRule('estado', mutable_states=('draft',), mutable_fields=('note',))
-        - Asiento can not be deleted (but can be updated) if related invoice is validated 
+        - Entry can not be deleted (but can be updated) if related invoice is validated 
         ImmutabilityRule('factura__estado', mutable_states=('draft',), allow_update=True)
+        - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
+        ImmutabilityRule('factura__estado', mutable_states=('draft', 'budget'), allow_create=False)
     """
     def __init__(self, field_name, mutable_states=(), mutable_fields=(),
-                 allow_update=False, allow_delete=False, error_message=""):
+                 allow_update=False, allow_delete=False, allow_create=True, error_message=""):
         self.field_name = field_name
         self.mutable_states = mutable_states
         self.mutable_fields = mutable_fields
         self.allow_update = allow_update
         self.allow_delete = allow_delete
+        self.allow_create = allow_create
         self.error_message = error_message
 
-    def is_mutable_field(self, model_instance, field_name):
-        """
-        Check if field is mutable.
-        Field is mutable if one of the following cases is fulfill:
-        - update is allowed (allow_update is True)
-        - rule is defined for field itself
-        - field is defined as one of mutable fields
-        - Model instance is in mutable state
-        :param model_instance: TxerpadBase
-        :param field_name: str
-        :return: bool
-        """
-        return self.allow_update or self.field_name == field_name or field_name in self.mutable_fields \
-               or self.has_mutable_state(model_instance)
-
-    def is_delete_allowed(self, model_instance):
-        """
-        Check if delete is allowed.
-        Delete is allowed if it is forced by param allow_delete=True or
-        if model is in mutable state
-        :param model_instance: TxerpadBase
-        :return: bool
-        """
-        return self.allow_delete or self.has_mutable_state(model_instance)
-
-    def has_mutable_state(self, model_instance, field_parts=None):
+    def is_object_mutable(self, model_instance, field_parts=None):
         """
         Check if model obj is in mutable state.
         Model obj is in mutable state if field defined by rule has 
@@ -107,14 +86,8 @@ class ImmutabilityRule(object):
             return True
         if relation.many_to_many or relation.one_to_many:
             for related_object in value.all():
-                if not self.has_mutable_state(related_object, field_parts=rel_parts):
+                if not self.is_object_mutable(related_object, field_parts=rel_parts):
                     return False
             return True
         else:
-            return self.has_mutable_state(value, field_parts=rel_parts)
-
-    def format_error_message(self, is_update=True):
-        message = self.error_message
-        if not message:
-            message = 'No se puede {action} ítem'
-        return message.format(action='editar' if is_update else 'borrar')
+            return self.is_object_mutable(value, field_parts=rel_parts)
