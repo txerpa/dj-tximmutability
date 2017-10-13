@@ -4,9 +4,97 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 from rest_framework.serializers import ValidationError
 from tximmutability.rule import ImmutabilityRule
+from abc import ABCMeta, abstractmethod, abstractproperty
+
+
+class ImmutableModelAction(object):
+    """
+    Action performed on the instance of an immutable model.
+    To implement concrete ImmutableModelAction it is obligatory to define action name 
+    and to implement is_allowed method
+
+    To validate action against immutability rules call validate(rules) method  
+    """
+    __metaclass__ = ABCMeta
+
+    def __init__(self, model_instance):
+        self.model_instance = model_instance
+
+    @abstractproperty
+    def name(self):
+        pass
+
+    @abstractmethod
+    def is_allowed(self, rule):
+        """
+        Check if the action on the concrete item is allowed by the given rule
+        :param rule: ImmutabilityRule
+        :return: bool
+        """
+        pass
+
+    def validate(self, immutability_rules):
+        """
+        :param: ImmutableModelAction []
+        :raise: ValidationError 
+        """
+        for rule in immutability_rules:
+            if not self.is_allowed(rule):
+                message = rule.error_message or 'No se puede {action} ítem'
+                raise ValidationError(message.format(action=self.name))
+
+
+class ImmutableModelCreate(ImmutableModelAction):
+    name = 'crear'
+
+    def is_allowed(self, rule):
+        """
+        Create is allowed if rule byself allow creation or if model is in mutable state
+        """
+        return rule.allow_create or rule.is_object_mutable(self.model_instance)
+
+
+class ImmutableModelUpdate(ImmutableModelAction):
+    name = 'editar'
+
+    def __init__(self, model_instance, field_name):
+        super(ImmutableModelUpdate, self).__init__(model_instance)
+        self.field_name = field_name
+
+    def is_allowed(self, rule):
+        """
+        Update of the instance field for the given rule is allowed if one of the following cases is fulfill:
+        - update is allowed by rule
+        - rule is defined for the field we want to update
+        - field is defined as one of mutable fields in rule
+        - Model instance is in mutable state
+        :param rule: ImmutabilityRule
+        :return: bool
+        """
+        return rule.allow_update or rule.field_name == self.field_name or self.field_name in rule.mutable_fields \
+            or rule.is_object_mutable(self.model_instance)
+
+
+class ImmutableModelDelete(ImmutableModelAction):
+    name = 'borrar'
+
+    def is_allowed(self, rule):
+        """
+        Delete of the instance is allowed if rule by self allow delete or if instance is in mutable state
+        """
+        return rule.allow_delete or rule.is_object_mutable(self.model_instance)
 
 
 class ImmutableModel(models.Model):
+    """
+     Immutable model is a model which has set of immutability rules defined in param immutability_rules.
+     By the each rule is defined the case when an instance of the given model is immutable.
+
+     Whenever an action (update, create or delete) is called, it will be validated for the each rule
+     in order to check whether there is a rule for which is not allowed to perform action.
+
+     If you want to ignore immutability rules and force execution of the action set param force to True
+    """
     immutability_rules = ()
 
     class Meta:
@@ -20,10 +108,13 @@ class ImmutableModel(models.Model):
         if not isinstance(self.immutability_rules, (tuple, list)):
             raise TypeError('immutability_rules attribute in %s must be '
                             'a list' % self.Meta.verbose_name)
-        for rule in self.immutability_rules:
-            if not isinstance(rule, ImmutabilityRule):
-                raise TypeError('%s: immutability rule item has to be ImmutabilityRule type'
-                                % self.Meta.verbose_name)
+        if any(not isinstance(rule, ImmutabilityRule) for rule in self.immutability_rules):
+            raise TypeError('%s: immutability rule item has to be ImmutabilityRule type' % self.Meta.verbose_name)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            ImmutableModelCreate(self).validate(self.immutability_rules)
+        super(ImmutableModel, self).save(*args, **kwargs)
 
     def update(self, validated_data, force=False, save_kwargs={}):
         """
@@ -53,7 +144,7 @@ class ImmutableModel(models.Model):
         :param value: new attribute value
         """
         if not force:
-            self.check_mutability(name)
+            ImmutableModelUpdate(self, name).validate(self.immutability_rules)
         setattr(self, name, value)
 
     def delete(self, *args, **kwargs):
@@ -63,26 +154,5 @@ class ImmutableModel(models.Model):
         """
         is_forced_action = kwargs.pop('force', False)
         if not is_forced_action:
-            self.check_delete_restriction()
+            ImmutableModelDelete(self).validate(self.immutability_rules)
         super(ImmutableModel, self).delete(*args, **kwargs)
-
-    def check_mutability(self, field_name):
-        """
-        Walk through model immutability rules and if there is a rule 
-        for which field is not mutable raise ValidationError with proper message
-        :param field_name: str 
-        :raise: ValidationError 
-        """
-        for rule in self.immutability_rules:
-            if not rule.is_mutable_field(self, field_name):
-                raise ValidationError(rule.format_error_message())
-
-    def check_delete_restriction(self):
-        """
-        Walk through model immutability rules and if there is a rule 
-        for which is not allowed to delete object raise ValidationError with proper message
-        :raise: ValidationError 
-        """
-        for rule in self.immutability_rules:
-            if not rule.is_delete_allowed(self):
-                raise ValidationError({'error': rule.format_error_message(is_update=False)})
