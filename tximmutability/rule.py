@@ -82,6 +82,8 @@ class ImmutabilityRule(object):
         :param rel_parts: name of the field or related object field
         :return: bool
         """
+        if not rel_parts:
+            return value in self.mutable_states
         if not value:
             return True
         if relation.many_to_many or relation.one_to_many:
