@@ -60,7 +60,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Framework :: Django',
-        'Framework :: Django :: 2.1.5',
+        'Framework :: Django :: 2.1.3',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
