@@ -114,7 +114,7 @@ class ImmutableModel(models.Model):
             ImmutableModelCreate(self).validate(self.immutability_rules)
         super(ImmutableModel, self).save(*args, **kwargs)
 
-    def update(self, validated_data, force=False, save_kwargs=None):
+    def update(self, validated_data, force=False, save_kwargs={}):
         """
         Set each attribute on the instance, and then save it.
         In case of error, accumulate them and after checking all fields
