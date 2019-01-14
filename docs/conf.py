@@ -46,8 +46,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Django Txerpa Immutability'
-copyright = u'2017, Txerpa'
+project = 'Django Txerpa Immutability'
+copyright = '2017, Txerpa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -192,8 +192,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'dj-tximmutability.tex', u'Django Txerpa Immutability Documentation',
-   u'Marija Milicevic', 'manual'),
+  ('index', 'dj-tximmutability.tex', 'Django Txerpa Immutability Documentation',
+   'Marija Milicevic', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -222,8 +222,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'dj-tximmutability', u'Django Txerpa Immutability Documentation',
-     [u'Marija Milicevic'], 1)
+    ('index', 'dj-tximmutability', 'Django Txerpa Immutability Documentation',
+     ['Marija Milicevic'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -236,8 +236,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'dj-tximmutability', u'Django Txerpa Immutability Documentation',
-   u'Marija Milicevic', 'dj-tximmutability', 'One line description of project.',
+  ('index', 'dj-tximmutability', 'Django Txerpa Immutability Documentation',
+   'Marija Milicevic', 'dj-tximmutability', 'One line description of project.',
    'Miscellaneous'),
 ]
 

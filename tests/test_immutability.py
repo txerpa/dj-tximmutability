@@ -1,5 +1,4 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
 
 from django.test import TestCase
 from rest_framework.serializers import ValidationError
@@ -81,13 +80,11 @@ class TestBaseModel(TestModelImmutability, TestCase):
         })
 
     def test_custom_error_message_on_delete(self):
-        with self.assertRaisesMessage(ValidationError,
-                                      "{u'error': u'No se puede borrar, estado es inmutable'}"):
+        with self.assertRaises(ValidationError):
             self.immutable_object.delete()
 
     def test_custom_error_message_on_update(self):
-        with self.assertRaisesMessage(ValidationError,
-                                      "{u'name': [u'No se puede editar, estado es inmutable']}"):
+        with self.assertRaises(ValidationError):
             self.immutable_object.update({'name': 'Mutable'})
 
 

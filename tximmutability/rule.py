@@ -1,5 +1,4 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
 
 from django.db.models import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, RelatedField

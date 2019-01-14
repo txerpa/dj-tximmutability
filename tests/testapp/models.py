@@ -1,5 +1,4 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
 
 from django.db import models
 
@@ -43,21 +42,21 @@ class ImmutableModelAllowUpdate(AbstractImmutableModel):
 
 
 class ImmutableRelationModel(AbstractImmutableModel):
-    related_field = models.ForeignKey('BaseImmutableModel', null=True, blank=True)
+    related_field = models.ForeignKey('BaseImmutableModel', null=True, blank=True, on_delete=models.CASCADE)
     immutability_rules = (
         AbstractImmutableModel.get_immutability_rule(field='related_field__state'),
     )
 
 
 class ImmutableMultiForwardRelModel(AbstractImmutableModel):
-    related_field = models.ForeignKey('ModelWithRelation', null=True, blank=True)
+    related_field = models.ForeignKey('ModelWithRelation', null=True, blank=True, on_delete=models.CASCADE)
     immutability_rules = (
         AbstractImmutableModel.get_immutability_rule(field='related_field__related_field__state'),
     )
 
 
 class ImmutableReverseRelationModel(AbstractImmutableModel):
-    related_field = models.ForeignKey('ImmutableMultiReverseRelModel', null=True, blank=True)
+    related_field = models.ForeignKey('ImmutableMultiReverseRelModel', null=True, blank=True, on_delete=models.CASCADE)
     immutability_rules = (
         AbstractImmutableModel.get_immutability_rule(field='modelwithrelation__state'),
     )
@@ -71,7 +70,7 @@ class ImmutableMultiReverseRelModel(AbstractImmutableModel):
 
 
 class ImmutableMultiMixRelModel(AbstractImmutableModel):
-    related_field = models.ForeignKey('BaseImmutableModel', null=True, blank=True)
+    related_field = models.ForeignKey('BaseImmutableModel', null=True, blank=True, on_delete=models.CASCADE)
     immutability_rules = (
         AbstractImmutableModel.get_immutability_rule(field='related_field__immutablerelationmodel__state'),
         AbstractImmutableModel.get_immutability_rule(field='modelwithrelation__related_field__state')
@@ -79,6 +78,6 @@ class ImmutableMultiMixRelModel(AbstractImmutableModel):
 
 
 class ModelWithRelation(AbstractImmutableModel):
-    related_field = models.ForeignKey('ImmutableReverseRelationModel', null=True, blank=True)
-    related_field2 = models.ForeignKey('ImmutableMultiMixRelModel', null=True, blank=True)
+    related_field = models.ForeignKey('ImmutableReverseRelationModel', null=True, blank=True, on_delete=models.CASCADE)
+    related_field2 = models.ForeignKey('ImmutableMultiMixRelModel', null=True, blank=True, on_delete=models.CASCADE)
 

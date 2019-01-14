@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 
 from django.db import models
 from rest_framework.serializers import ValidationError
@@ -106,17 +105,16 @@ class ImmutableModel(models.Model):
 
     def check_immutability_rules(self):
         if not isinstance(self.immutability_rules, (tuple, list)):
-            raise TypeError('immutability_rules attribute in %s must be '
-                            'a list' % self.Meta.verbose_name)
+            raise TypeError(f'immutability_rules attribute in {self.Meta.verbose_name} must be a list')
         if any(not isinstance(rule, ImmutabilityRule) for rule in self.immutability_rules):
-            raise TypeError('%s: immutability rule item has to be ImmutabilityRule type' % self.Meta.verbose_name)
+            raise TypeError(f'{self.Meta.verbose_name}: immutability rule item has to be ImmutabilityRule type')
 
     def save(self, *args, **kwargs):
         if not self.pk:
             ImmutableModelCreate(self).validate(self.immutability_rules)
         super(ImmutableModel, self).save(*args, **kwargs)
 
-    def update(self, validated_data, force=False, save_kwargs={}):
+    def update(self, validated_data, force=False, save_kwargs=None):
         """
         Set each attribute on the instance, and then save it.
         In case of error, accumulate them and after checking all fields
