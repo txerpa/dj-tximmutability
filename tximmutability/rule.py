@@ -29,15 +29,20 @@ class ImmutabilityRule(object):
         - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
         ImmutabilityRule('factura__estado', mutable_states=('draft', 'budget'), allow_create=False)
     """
-    def __init__(self, field_name, mutable_states=(), mutable_fields=(),
-                 allow_update=False, allow_delete=False, allow_create=True, error_message=""):
+    def __init__(self, field_name, mutable_states=(), mutable_fields=(), exclude_fields=(),
+                 allow_update=False, allow_delete=False, allow_create=True, error_message="", callback=None):
         self.field_name = field_name
         self.mutable_states = mutable_states
         self.mutable_fields = mutable_fields
+        self.exclude_fields = exclude_fields
         self.allow_update = allow_update
         self.allow_delete = allow_delete
         self.allow_create = allow_create
         self.error_message = error_message
+        self.callback = callback
+
+    def excluded_field(self, field_name):
+        field_name in self.mutable_fields or field_name in self.exclude_fields
 
     def is_object_mutable(self, model_instance, field_parts=None):
         """
@@ -70,6 +75,7 @@ class ImmutabilityRule(object):
                 # field is model attribute
                 field_val = getattr(model_instance, field_name, None)
                 return field_val in self.mutable_states
+        
 
     def is_relation_mutable(self, relation, value, rel_parts):
         """

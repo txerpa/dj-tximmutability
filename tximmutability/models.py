@@ -20,7 +20,7 @@ class ImmutableModelAction(object):
     def __init__(self, model_instance):
         self.model_instance = model_instance
 
-    @abstractproperty
+    @abstractmethod
     def name(self):
         pass
 
@@ -71,7 +71,7 @@ class ImmutableModelUpdate(ImmutableModelAction):
         :param rule: ImmutabilityRule
         :return: bool
         """
-        return rule.allow_update or rule.field_name == self.field_name or self.field_name in rule.mutable_fields \
+        return rule.allow_update or rule.field_name == self.field_name or rule.excluded_field(self.field_name) \
             or rule.is_object_mutable(self.model_instance)
 
 
