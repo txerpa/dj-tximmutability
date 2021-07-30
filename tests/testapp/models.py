@@ -16,7 +16,7 @@ class AbstractImmutableModel(ImmutableModel):
     def get_immutability_rule(**kwargs):
         field = kwargs.pop('field', None)
         field_name = 'state' if field is None else field
-        return ImmutabilityRule(field_name, mutable_states=(ModelState.MUTABLE_STATE,), **kwargs)
+        return ImmutabilityRule(field_name, mutable_values=(ModelState.MUTABLE_STATE,), **kwargs)
 
     class Meta:
         abstract = True

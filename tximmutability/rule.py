@@ -16,28 +16,31 @@ class ImmutabilityRule(object):
     By default immutable object can be created. To forbid creation set allow_create to False
 
     To allow object mutability for the specific field's values
-    define that values in mutable_states param
+    define that values in mutable_values param
 
     To exclude some fields from the rule and make them mutable define field names in 
     mutable_fields param
 
     Examples:
         - Only invoice note can be changed if invoice is not in draft state.
-        ImmutabilityRule('estado', mutable_states=('draft',), mutable_fields=('note',))
+        ImmutabilityRule('estado', mutable_values=('draft',), mutable_fields=('note',))
         - Entry can not be deleted (but can be updated) if related invoice is validated 
-        ImmutabilityRule('factura__estado', mutable_states=('draft',), allow_update=True)
+        ImmutabilityRule('factura__estado', mutable_values=('draft',), allow_update=True)
         - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
-        ImmutabilityRule('factura__estado', mutable_states=('draft', 'budget'), allow_create=False)
+        ImmutabilityRule('factura__estado', mutable_values=('draft', 'budget'), allow_create=False)
     """
-    def __init__(self, field_name, mutable_states=(), mutable_fields=(), exclude_fields=(),
+    def __init__(self, field_name, mutable_values=(), mutable_fields=(), exclude_fields=(),
                  allow_update=False, allow_delete=False, allow_create=True, error_message="", callback=None):
         self.field_name = field_name
-        self.mutable_states = mutable_states
+        self.mutable_values = mutable_values
+
         self.mutable_fields = mutable_fields
         self.exclude_fields = exclude_fields
+
         self.allow_update = allow_update
         self.allow_delete = allow_delete
         self.allow_create = allow_create
+
         self.error_message = error_message
         self.callback = callback
 
@@ -48,7 +51,7 @@ class ImmutabilityRule(object):
         """
         Check if model obj is in mutable state.
         Model obj is in mutable state if field defined by rule has 
-        one of the values defined in mutable_states. If field is relation check 
+        one of the values defined in mutable_values. If field is relation check
         if relation is mutable
         :param model_instance: TxerpadBase
         :param field_parts: name of the field or related object field 
@@ -74,7 +77,7 @@ class ImmutabilityRule(object):
             else:
                 # field is model attribute
                 field_val = getattr(model_instance, field_name, None)
-                return field_val in self.mutable_states
+                return field_val in self.mutable_values
         
 
     def is_relation_mutable(self, relation, value, rel_parts):
@@ -89,7 +92,7 @@ class ImmutabilityRule(object):
         :return: bool
         """
         if not rel_parts:
-            return value in self.mutable_states
+            return value in self.mutable_values
         if not value:
             return True
         if relation.many_to_many or relation.one_to_many:
