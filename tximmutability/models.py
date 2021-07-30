@@ -7,7 +7,7 @@ from tximmutability.rule import ImmutabilityRule
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 
-class ImmutableModelAction(object):
+class BaseImmutableModelAction(object):
     """
     Action performed on the instance of an immutable model.
     To implement concrete ImmutableModelAction it is obligatory to define action name 
@@ -40,11 +40,11 @@ class ImmutableModelAction(object):
         """
         for rule in immutability_rules:
             if not self.is_allowed(rule):
-                message = rule.error_message or 'No se puede {action} ítem'
-                raise ValidationError(message.format(action=self.name))
+                message = rule.error_message or f'No se puede {self.name} ítem'
+                raise ValidationError(message)
 
 
-class ImmutableModelCreate(ImmutableModelAction):
+class BaseImmutableModelCreate(BaseImmutableModelAction):
     name = 'crear'
 
     def is_allowed(self, rule):
@@ -54,11 +54,11 @@ class ImmutableModelCreate(ImmutableModelAction):
         return rule.allow_create or rule.is_object_mutable(self.model_instance)
 
 
-class ImmutableModelUpdate(ImmutableModelAction):
+class BaseImmutableModelUpdate(BaseImmutableModelAction):
     name = 'editar'
 
     def __init__(self, model_instance, field_name):
-        super(ImmutableModelUpdate, self).__init__(model_instance)
+        super(BaseImmutableModelUpdate, self).__init__(model_instance)
         self.field_name = field_name
 
     def is_allowed(self, rule):
@@ -75,7 +75,7 @@ class ImmutableModelUpdate(ImmutableModelAction):
             or rule.is_object_mutable(self.model_instance)
 
 
-class ImmutableModelDelete(ImmutableModelAction):
+class BaseImmutableModelDelete(BaseImmutableModelAction):
     name = 'borrar'
 
     def is_allowed(self, rule):
@@ -113,7 +113,7 @@ class ImmutableModel(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            ImmutableModelCreate(self).validate(self.immutability_rules)
+            BaseImmutableModelCreate(self).validate(self.immutability_rules)
         super(ImmutableModel, self).save(*args, **kwargs)
 
     def update(self, validated_data, force=False, save_kwargs={}):
@@ -144,7 +144,7 @@ class ImmutableModel(models.Model):
         :param value: new attribute value
         """
         if not force:
-            ImmutableModelUpdate(self, name).validate(self.immutability_rules)
+            BaseImmutableModelUpdate(self, name).validate(self.immutability_rules)
         setattr(self, name, value)
 
     def delete(self, *args, **kwargs):
@@ -154,5 +154,5 @@ class ImmutableModel(models.Model):
         """
         is_forced_action = kwargs.pop('force', False)
         if not is_forced_action:
-            ImmutableModelDelete(self).validate(self.immutability_rules)
+            BaseImmutableModelDelete(self).validate(self.immutability_rules)
         super(ImmutableModel, self).delete(*args, **kwargs)
