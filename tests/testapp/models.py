@@ -5,7 +5,7 @@ from django.db import models
 
 from tests.testapp.constants import ModelState
 from tximmutability.models import ImmutableModel
-from tximmutability.rule import ImmutabilityRule
+from tximmutability.rule import MutabilityRule
 
 
 class AbstractImmutableModel(ImmutableModel):
@@ -16,7 +16,7 @@ class AbstractImmutableModel(ImmutableModel):
     def get_immutability_rule(**kwargs):
         field = kwargs.pop('field', None)
         field_name = 'state' if field is None else field
-        return ImmutabilityRule(field_name, mutable_values=(ModelState.MUTABLE_STATE,), **kwargs)
+        return MutabilityRule(field_name, mutable_values=(ModelState.MUTABLE_STATE,), **kwargs)
 
     class Meta:
         abstract = True
