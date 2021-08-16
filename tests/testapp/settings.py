@@ -27,3 +27,5 @@ else:
 
 SECRET_KEY = "not needed"
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+

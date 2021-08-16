@@ -53,7 +53,7 @@ setup(
         'tximmutability',
     ],
     include_package_data=True,
-    install_requires=[],
+    install_requires=["Django>=2.1.3", "djangorestframework>=3.1.0"],
     license="MIT",
     zip_safe=False,
     keywords='dj-tximmutability',

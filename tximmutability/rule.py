@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from django.db.models import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 
 
@@ -17,13 +17,13 @@ class ImmutabilityRule(object):
     To allow object mutability for the specific field's values
     define that values in mutable_states param
 
-    To exclude some fields from the rule and make them mutable define field names in 
+    To exclude some fields from the rule and make them mutable define field names in
     mutable_fields param
 
     Examples:
         - Only invoice note can be changed if invoice is not in draft state.
         ImmutabilityRule('estado', mutable_states=('draft',), mutable_fields=('note',))
-        - Entry can not be deleted (but can be updated) if related invoice is validated 
+        - Entry can not be deleted (but can be updated) if related invoice is validated
         ImmutabilityRule('factura__estado', mutable_states=('draft',), allow_update=True)
         - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
         ImmutabilityRule('factura__estado', mutable_states=('draft', 'budget'), allow_create=False)
@@ -41,12 +41,12 @@ class ImmutabilityRule(object):
     def is_object_mutable(self, model_instance, field_parts=None):
         """
         Check if model obj is in mutable state.
-        Model obj is in mutable state if field defined by rule has 
-        one of the values defined in mutable_states. If field is relation check 
+        Model obj is in mutable state if field defined by rule has
+        one of the values defined in mutable_states. If field is relation check
         if relation is mutable
         :param model_instance: TxerpadBase
-        :param field_parts: name of the field or related object field 
-        (e.g 'estado' or 'factura__estado') 
+        :param field_parts: name of the field or related object field
+        (e.g 'estado' or 'factura__estado')
         :return: bool
         """
         field_parts = field_parts or self.field_name.split('__')
@@ -74,7 +74,7 @@ class ImmutabilityRule(object):
         """
         Relation is mutable if related object(s) has mutable state.
         If related object is not defined relation is mutable by default.
-        If there are more related objects (relation is many_to_many or one_to_many) 
+        If there are more related objects (relation is many_to_many or one_to_many)
         relation is mutable only if all related objects are mutable
         :param relation: ForeignObjectRel|RelatedField
         :param value: related object
