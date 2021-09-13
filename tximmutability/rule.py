@@ -9,36 +9,40 @@ from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import RelatedField
 from django.utils.translation import gettext as _
 
-logger = logging.getLogger('tximmutability')
+logger = logging.getLogger('txmutability')
 
 
 class MutabilityRule:
     """
-        This class serves to define the rule when an model is immutable.
-        To define immutability rule it is obligatory to define field name
-        of the model from which depend model immutability. To define relation field use '__' as separator
+        This class serves to define the rule when an model is mutable.
+        To define mutability rule it is mandatory to define "field_rule"
+        of the model from which depend model mutability.
+        To define relation field use '__' as separator in "field_rule"
 
-        Once field value is defined model becomes immutable(you can not update it or delete it).
-        To allow update/delete of the object set param exclude_on_update/exclude_on_delete to True.
-        By default immutable object can be created. To forbid creation set allow_create to False
+        Once, "field_rule" is defined, model becomes immutable if the rule is not fulfilled (you can not update
+        it or delete it).
 
-        To allow object mutability for the specific field's values
-        define that values in values param
-
-        To exclude some fields from the rule and make them mutable define field names in
-        exclude_fields param
+        Parameters
+        ----------
+            field_rule <String>: field mutability effects.
+            values <set>: set of values to establish when the model will be mutable.
+            exclude_fields <set>: set of fields names to exclude for this rule.
+            exclude_on_create <Bool>: To exclude this rule on create set <True>, otherwise <False>. Default True
+            exclude_on_update <Bool>: To exclude this rule on update set <True>, otherwise <False>. Default False
+            exclude_on_delete <Bool>: To exclude this rule on delete set <True>, otherwise <False>. Default False
+            error_message  <String>: Message passed on raise.
 
         Examples:
             - Only invoice note can be changed if invoice is not in draft state.
-            ImmutabilityRule('estado', values=('draft',), exclude_fields=('note',))
+            MutabilityRule('state', values=('draft',), exclude_fields=('note',))
             - Entry can not be deleted (but can be updated) if related invoice is validated
-            ImmutabilityRule('factura__estado', values=('draft',), allow_update=True)
+            MutabilityRule('invoice__state', values=('draft',), exclude_on_update=True)
             - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
-            ImmutabilityRule('factura__estado', values=('draft', 'budget'), allow_create=False)
+            MutabilityRule('invoice__state', values=('draft', 'budget'), exclude_on_create=False)
         """
 
     def __init__(self, field_rule, values=(), exclude_fields=(), exclude_on_create=True, exclude_on_update=False,
-                 exclude_on_delete=False, error_message="", callback=None):
+                 exclude_on_delete=False, error_message=""):
         """
         param fields_data: dict {<field_name>: set(<values for each field>)}, like {"name": ('tim', 'tom', 'tam')}
         """
@@ -51,7 +55,6 @@ class MutabilityRule:
         self.exclude_on_delete = exclude_on_delete
 
         self.error_message = error_message
-        self.callback = callback
 
     def __name__(self):
         return f"{self.field_rule} {self.values}"
@@ -64,7 +67,7 @@ class MutabilityRule:
         if relation is mutable
         :param model_instance: TxerpadBase
         :param field_parts: name of the field or related object field
-        (e.g 'estado' or 'factura__estado')
+        (e.g 'state' or 'invoice__state')
         :return: bool
         """
         field_parts = field_parts or self.field_rule.split('__')
