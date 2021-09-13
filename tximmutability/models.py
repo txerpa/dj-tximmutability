@@ -6,9 +6,9 @@ import logging
 from abc import ABCMeta
 from abc import abstractmethod
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
-from rest_framework.serializers import ValidationError
 from tximmutability.rule import MutabilityRule
 logger = logging.getLogger('tximmutability')
 
@@ -70,6 +70,7 @@ class BaseImmutableModelUpdate(BaseImmutableModelAction):
     errors = {}
 
     def __init__(self, model_instance):
+        self.errors = {}
         super(BaseImmutableModelUpdate, self).__init__(model_instance)
 
     def validate(self, immutability_rules):
@@ -81,8 +82,6 @@ class BaseImmutableModelUpdate(BaseImmutableModelAction):
             self.is_allowed(rule)
 
         if self.errors:
-            import inspect
-            stack = inspect.stack()
             raise ValidationError(self.errors)
 
     def is_allowed(self, rule):
