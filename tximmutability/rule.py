@@ -37,12 +37,12 @@ class MutabilityRule:
             ImmutabilityRule('factura__estado', values=('draft', 'budget'), allow_create=False)
         """
 
-    def __init__(self, field_name, values=(), exclude_fields=(), exclude_on_create=True, exclude_on_update=False,
+    def __init__(self, field_rule, values=(), exclude_fields=(), exclude_on_create=True, exclude_on_update=False,
                  exclude_on_delete=False, error_message="", callback=None):
         """
         param fields_data: dict {<field_name>: set(<values for each field>)}, like {"name": ('tim', 'tom', 'tam')}
         """
-        self.field_name = field_name
+        self.field_rule = field_rule
         self.values = values
         self.exclude_fields = exclude_fields
 
@@ -54,7 +54,7 @@ class MutabilityRule:
         self.callback = callback
 
     def __name__(self):
-        return f"{self.field_name} {self.values}"
+        return f"{self.field_rule} {self.values}"
 
     def is_mutable(self, model_instance, field_parts=None) -> bool:
         """
@@ -67,7 +67,7 @@ class MutabilityRule:
         (e.g 'estado' or 'factura__estado')
         :return: bool
         """
-        field_parts = field_parts or self.field_name.split('__')
+        field_parts = field_parts or self.field_rule.split('__')
         opts = model_instance._meta
 
         # walk relationships
