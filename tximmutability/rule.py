@@ -14,35 +14,43 @@ logger = logging.getLogger('txmutability')
 
 class MutabilityRule:
     """
-        This class serves to define the rule when an model is mutable.
-        To define mutability rule it is mandatory to define "field_rule"
-        of the model from which depend model mutability.
-        To define relation field use '__' as separator in "field_rule"
+    This class serves to define the rule when an model is mutable.
+    To define mutability rule it is mandatory to define "field_rule"
+    of the model from which depend model mutability.
+    To define relation field use '__' as separator in "field_rule"
 
-        Once, "field_rule" is defined, model becomes immutable if the rule is not fulfilled (you can not update
-        it or delete it).
+    Once, "field_rule" is defined, model becomes immutable if the rule is not fulfilled (you can not update
+    it or delete it).
 
-        Parameters
-        ----------
-            field_rule <String>: field mutability effects.
-            values <set>: set of values to establish when the model will be mutable.
-            exclude_fields <set>: set of fields names to exclude for this rule.
-            exclude_on_create <Bool>: To exclude this rule on create set <True>, otherwise <False>. Default True
-            exclude_on_update <Bool>: To exclude this rule on update set <True>, otherwise <False>. Default False
-            exclude_on_delete <Bool>: To exclude this rule on delete set <True>, otherwise <False>. Default False
-            error_message  <String>: Message passed on raise.
+    Parameters
+    ----------
+        field_rule <String>: field mutability effects.
+        values <set>: set of values to establish when the model will be mutable.
+        exclude_fields <set>: set of fields names to exclude for this rule.
+        exclude_on_create <Bool>: To exclude this rule on create set <True>, otherwise <False>. Default True
+        exclude_on_update <Bool>: To exclude this rule on update set <True>, otherwise <False>. Default False
+        exclude_on_delete <Bool>: To exclude this rule on delete set <True>, otherwise <False>. Default False
+        error_message  <String>: Message passed on raise.
 
-        Examples:
-            - Only invoice note can be changed if invoice is not in draft state.
-            MutabilityRule('state', values=('draft',), exclude_fields=('note',))
-            - Entry can not be deleted (but can be updated) if related invoice is validated
-            MutabilityRule('invoice__state', values=('draft',), exclude_on_update=True)
-            - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
-            MutabilityRule('invoice__state', values=('draft', 'budget'), exclude_on_create=False)
-        """
+    Examples:
+        - Only invoice note can be changed if invoice is not in draft state.
+        MutabilityRule('state', values=('draft',), exclude_fields=('note',))
+        - Entry can not be deleted (but can be updated) if related invoice is validated
+        MutabilityRule('invoice__state', values=('draft',), exclude_on_update=True)
+        - Invoice line cannot be updated or deleted nor new line can be added if invoice is not in draft or budget state
+        MutabilityRule('invoice__state', values=('draft', 'budget'), exclude_on_create=False)
+    """
 
-    def __init__(self, field_rule, values=(), exclude_fields=(), exclude_on_create=True, exclude_on_update=False,
-                 exclude_on_delete=False, error_message=""):
+    def __init__(
+        self,
+        field_rule,
+        values=(),
+        exclude_fields=(),
+        exclude_on_create=True,
+        exclude_on_update=False,
+        exclude_on_delete=False,
+        error_message="",
+    ):
         """
         param fields_data: dict {<field_name>: set(<values for each field>)}, like {"name": ('tim', 'tom', 'tam')}
         """
@@ -79,7 +87,7 @@ class MutabilityRule:
                 return True
             if isinstance(rel, (RelatedField, ForeignObjectRel)):
                 # field is forward or reverse relation
-                rel_parts = field_parts[field_parts.index(field_name) + 1:]
+                rel_parts = field_parts[field_parts.index(field_name) + 1 :]
                 if isinstance(rel, ForeignObjectRel):
                     field_name = rel.get_accessor_name()
                 field_val = getattr(model_instance, field_name)

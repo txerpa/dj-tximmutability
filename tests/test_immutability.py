@@ -98,13 +98,15 @@ class TestBaseModel(TestModelImmutability, TestCase):
                 raise e
 
     def test_custom_error_message_on_delete(self):
-        with self.assertRaisesMessage(ValidationError,
-                                      "['Instance can not be delete, immutable status']"):
+        with self.assertRaisesMessage(
+            ValidationError, "['Instance can not be delete, immutable status']"
+        ):
             self.immutable_object.delete()
 
     def test_custom_error_message_on_update(self):
-        with self.assertRaisesMessage(ValidationError,
-                                      "['Instance can not be update, immutable status']"):
+        with self.assertRaisesMessage(
+            ValidationError, "['Instance can not be update, immutable status']"
+        ):
             try:
                 self.immutable_object.name = ModelState.MUTABLE_STATE
                 self.immutable_object.save()
@@ -148,16 +150,22 @@ class TestMultiForwardRelation(TestModelImmutability, TestCase):
         )
 
     def test_can_update_field_when_model_is_mutable(self):
-        self.multi_rel_immutable_object.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.state = (
+            ModelState.MUTABLE_STATE
+        )
         self.multi_rel_immutable_object.related_field.save()
-        self.multi_rel_immutable_object.related_field.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.related_field.state = (
+            ModelState.MUTABLE_STATE
+        )
         self.multi_rel_immutable_object.related_field.related_field.save()
         self.immutable_object.name = 'Mutable'
         self.immutable_object.save()
         self.assertEqual(self.immutable_object.name, 'Mutable')
 
     def test_can_delete_when_model_is_mutable(self):
-        self.multi_rel_immutable_object.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.state = (
+            ModelState.MUTABLE_STATE
+        )
         self.multi_rel_immutable_object.related_field.save()
         self.immutability_depend_object.state = ModelState.MUTABLE_STATE
         self.immutability_depend_object.save()
@@ -222,7 +230,9 @@ class TestForwardReverseRelation(TestModelImmutability, TestCase):
         )
 
     def test_can_update_field_when_model_is_mutable(self):
-        self.immutability_depend_object.related_field.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.related_field.state = (
+            ModelState.MUTABLE_STATE
+        )
         self.immutability_depend_object.related_field.save()
         self.immutability_depend_object.state = ModelState.MUTABLE_STATE
         self.immutability_depend_object.save()
@@ -231,7 +241,9 @@ class TestForwardReverseRelation(TestModelImmutability, TestCase):
         self.assertEqual(self.immutable_object.name, 'Mutable')
 
     def test_can_delete_when_model_is_mutable(self):
-        self.immutability_depend_object.related_field.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.related_field.state = (
+            ModelState.MUTABLE_STATE
+        )
         self.immutability_depend_object.related_field.save()
         self.immutability_depend_object.state = ModelState.MUTABLE_STATE
         self.immutability_depend_object.save()
@@ -255,7 +267,7 @@ class TestReverseForwardRelation(TestModelImmutability, TestCase):
         self.end_relation = ImmutableReverseRelationModel.objects.create()
         self.modedl_with_rel = ModelWithRelation.objects.create(
             related_field2=self.reverse_forward_rel_object,
-            related_field=self.end_relation
+            related_field=self.end_relation,
         )
 
     def test_can_delete_when_model_is_mutable(self):
@@ -277,7 +289,6 @@ class TestReverseForwardRelation(TestModelImmutability, TestCase):
 
 
 class TestModelImmutabilityDeleteAllowed(TestCase):
-
     def setUp(self):
         self.immutable_object = ImmutableModelAllowDelete.objects.create()
 

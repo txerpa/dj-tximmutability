@@ -16,8 +16,9 @@ def get_version(*file_paths):
     """Retrieves the version from tximmutability/__init__.py"""
     filename = os.path.join(os.path.dirname(__file__), *file_paths)
     version_file = open(filename).read()
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
+    version_match = re.search(
+        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M
+    )
     if version_match:
         return version_match.group(1)
     raise RuntimeError('Unable to find version string.')
@@ -28,6 +29,7 @@ version = get_version("tximmutability", "__init__.py")
 if sys.argv[-1] == 'publish':
     try:
         import wheel
+
         print("Wheel version: ", wheel.__version__)
     except ImportError:
         print('Wheel library missing. Please run "pip install wheel"')
@@ -61,10 +63,7 @@ setup(
         'tximmutability',
     ],
     include_package_data=True,
-    install_requires=[
-        "django>=2.2,<=3",
-        "django-model-utils==4.1.1"
-    ],
+    install_requires=["django>=2.2,<=3", "django-model-utils==4.1.1"],
     python_requires=">=3.5",
     license="BSD",
     zip_safe=False,

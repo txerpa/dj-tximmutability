@@ -22,8 +22,9 @@ class BaseMutableModelAction(object):
     To implement concrete MutableModelAction it is obligatory to define action name
     and to implement is_allowed method
 
-    To validate action against immutability rules call validate(rules) method  
+    To validate action against immutability rules call validate(rules) method
     """
+
     # output = _('Today is %(month)s %(day)s.') % {'month': m, 'day': d}
     __metaclass__ = ABCMeta
 
@@ -31,8 +32,9 @@ class BaseMutableModelAction(object):
         self.model_instance = model_instance
 
     def error_message(self, rule=None):
-        return rule.error_message % {'action': self.action} or \
-               _(f'This item could not be {self.action}.')
+        return rule.error_message % {'action': self.action} or _(
+            f'This item could not be {self.action}.'
+        )
 
     @property
     def name(self):
@@ -50,7 +52,7 @@ class BaseMutableModelAction(object):
     def validate(self, mutability_rules):
         """
         :param: MutableModelAction []
-        :raise: ValidationError 
+        :raise: ValidationError
         """
         for rule in mutability_rules:
             if not self.is_allowed(rule):
@@ -131,7 +133,6 @@ class BaseMutableModelDelete(BaseMutableModelAction):
 
 
 class AbstractFieldTracker(FieldTracker):
-
     def finalize_class(self, sender, name='tracker', **kwargs):
         self.name = name
         self.attname = '_%s' % name
@@ -141,14 +142,15 @@ class AbstractFieldTracker(FieldTracker):
 
 class MutableModel(models.Model):
     """
-     Immutable model is a model which has set of immutability rules defined in param mutability_rules.
-     By the each rule is defined the case when an instance of the given model is immutable.
+    Immutable model is a model which has set of immutability rules defined in param mutability_rules.
+    By the each rule is defined the case when an instance of the given model is immutable.
 
-     Whenever an action (update, create or delete) is called, it will be validated for the each rule
-     in order to check whether there is a rule for which is not allowed to perform action.
+    Whenever an action (update, create or delete) is called, it will be validated for the each rule
+    in order to check whether there is a rule for which is not allowed to perform action.
 
-     If you want to ignore immutability rules and force execution of the action set param force to True
+    If you want to ignore immutability rules and force execution of the action set param force to True
     """
+
     mutability_rules = ()
     trackable_fields = None
 
@@ -165,10 +167,22 @@ class MutableModel(models.Model):
     def check_mutability_rules(self):
         model_name = getattr(self.Meta, 'verbose_name', self.__class__.__name__)
         if not isinstance(self.mutability_rules, (tuple, list)):
-            raise TypeError(_('%s.mutability_rules attribute must be '
-                              'a list.' % model_name))
-        if any(not isinstance(rule, MutabilityRule) for rule in self.mutability_rules):
-            raise TypeError(_('%s.mutability_rule attribute must be an instance of \"MutabilityRule\".' % model_name))
+            raise TypeError(
+                _(
+                    '%s.mutability_rules attribute must be '
+                    'a list.' % model_name
+                )
+            )
+        if any(
+            not isinstance(rule, MutabilityRule)
+            for rule in self.mutability_rules
+        ):
+            raise TypeError(
+                _(
+                    '%s.mutability_rule attribute must be an instance of \"MutabilityRule\".'
+                    % model_name
+                )
+            )
 
     def save(self, *args, **kwargs):
         tx_force = kwargs.pop("force", False)
@@ -193,4 +207,6 @@ class MutableModel(models.Model):
         """
         Method to get field value saved at DB.
         """
-        raise NotImplementedError("Subclasses of MutableModel must provide a \"saved_value\" method")
+        raise NotImplementedError(
+            "Subclasses of MutableModel must provide a \"saved_value\" method"
+        )
