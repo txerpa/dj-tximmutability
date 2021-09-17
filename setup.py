@@ -9,6 +9,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
+CURRENT_PYTHON = sys.version_info[:2]
+
 
 def get_version(*file_paths):
     """Retrieves the version from tximmutability/__init__.py"""
@@ -22,7 +24,6 @@ def get_version(*file_paths):
 
 
 version = get_version("tximmutability", "__init__.py")
-
 
 if sys.argv[-1] == 'publish':
     try:
@@ -41,13 +42,17 @@ if sys.argv[-1] == 'tag':
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+with open('README.rst', 'r') as f:
+    readme = f.read()
+# readme = open('README.rst').read()
+with open('HISTORY.rst', 'r') as f:
+    history = f.read().replace('.. :changelog:', '')
+# history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='dj-tximmutability',
     version=version,
-    description="""Your project description goes here""",
+    description='Mutability rules for Django models.',
     long_description=readme + '\n\n' + history,
     author='Marija Milicevic',
     author_email='marija.milicevic@txerpa.com',
@@ -56,24 +61,33 @@ setup(
         'tximmutability',
     ],
     include_package_data=True,
-    install_requires=[],
-    license="MIT",
+    install_requires=[
+        "django>=2.2,<=3",
+        "django-model-utils==4.1.1"
+    ],
+    python_requires=">=3.5",
+    license="BSD",
     zip_safe=False,
-    keywords='dj-tximmutability',
+    keywords=['django', 'tximmutability', 'immutability', 'mutability'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.8',
         'Framework :: Django :: 1.9',
         'Framework :: Django :: 1.10',
+        'Framework :: Django :: 2.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Internet :: WWW/HTTP',
     ],
 )
