@@ -1,13 +1,20 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
-from rest_framework.serializers import ValidationError
 
 from tests.testapp.constants import ModelState
-from tests.testapp.models import ImmutableModelAllowDelete, BaseImmutableModel, ImmutableModelAllowUpdate, \
-    ImmutableReverseRelationModel, ImmutableRelationModel, ModelWithRelation, \
-    ImmutableMultiForwardRelModel, ImmutableMultiReverseRelModel, ImmutableMultiMixRelModel
+from tests.testapp.models import BaseImmutableModel
+from tests.testapp.models import ImmutableModelAllowDelete
+from tests.testapp.models import ImmutableModelAllowUpdate
+from tests.testapp.models import ImmutableMultiForwardRelModel
+from tests.testapp.models import ImmutableMultiMixRelModel
+from tests.testapp.models import ImmutableMultiReverseRelModel
+from tests.testapp.models import ImmutableRelationModel
+from tests.testapp.models import ImmutableReverseRelationModel
+from tests.testapp.models import ModelWithRelation
 
 
 class TestModelImmutability(object):
@@ -26,16 +33,20 @@ class TestModelImmutability(object):
         raise NotImplementedError()
 
     def test_cant_update_field_when_model_is_immutable(self):
-        self.assertRaises(ValidationError, self.immutable_object.update_attribute, 'name', 'Mutable')
+        with self.assertRaises(ValidationError):
+            self.immutable_object.name = 'Mutable'
+            self.immutable_object.save()
 
     def test_can_update_field_when_model_is_mutable(self):
         self.immutability_depend_object.state = ModelState.MUTABLE_STATE
         self.immutability_depend_object.save()
-        self.immutable_object.update_attribute('name', 'Mutable')
+        self.immutable_object.name = 'Mutable'
+        self.immutable_object.save()
         self.assertEqual(self.immutable_object.name, 'Mutable')
 
     def test_cant_delete_when_model_is_immutable(self):
-        self.assertRaises(ValidationError, self.immutable_object.delete)
+        with self.assertRaises(ValidationError):
+            self.immutable_object.delete()
 
     def test_can_delete_when_model_is_mutable(self):
         self.immutability_depend_object.state = ModelState.MUTABLE_STATE
@@ -48,7 +59,8 @@ class TestModelImmutability(object):
         self.assertEqual(0, len(self.immutable_model.objects.all()))
 
     def test_force_update_when_model_is_immutable(self):
-        self.immutable_object.update_attribute('state', ModelState.MUTABLE_STATE, force=True)
+        self.immutable_object.state = ModelState.MUTABLE_STATE
+        self.immutable_object.save(force=True)
         self.assertEqual(self.immutable_object.state, ModelState.MUTABLE_STATE)
 
 
@@ -67,28 +79,37 @@ class TestBaseModel(TestModelImmutability, TestCase):
         self.base_immutable_object = self.immutable_model.objects.create()
 
     def test_can_update_rule_field_when_model_is_immutable(self):
-        self.immutable_object.update_attribute('state', ModelState.MUTABLE_STATE)
+        self.immutable_object.state = ModelState.MUTABLE_STATE
+        self.immutable_object.save()
         self.assertEqual(self.immutable_object.state, ModelState.MUTABLE_STATE)
 
     def test_can_update_mutable_fields_when_model_is_immutable(self):
-        self.immutable_object.update_attribute('description', 'Test')
+        self.immutable_object.description = 'Test'
+        self.immutable_object.save()
         self.assertEqual(self.immutable_object.description, 'Test')
 
     def test_cant_update_model_when_immutable_field_is_included(self):
-        self.assertRaises(ValidationError, self.immutable_object.update, {
-            'description': ModelState.MUTABLE_STATE,
-            'name': 'Mutable'
-        })
+        with self.assertRaises(ValidationError):
+            self.immutable_object.description = ModelState.MUTABLE_STATE
+            self.immutable_object.name = 'Mutable'
+            try:
+                self.immutable_object.save()
+            except Exception as e:
+                raise e
 
     def test_custom_error_message_on_delete(self):
         with self.assertRaisesMessage(ValidationError,
-                                      "{u'error': u'No se puede borrar, estado es inmutable'}"):
+                                      "['Instance can not be delete, immutable status']"):
             self.immutable_object.delete()
 
     def test_custom_error_message_on_update(self):
         with self.assertRaisesMessage(ValidationError,
-                                      "{u'name': [u'No se puede editar, estado es inmutable']}"):
-            self.immutable_object.update({'name': 'Mutable'})
+                                      "['Instance can not be update, immutable status']"):
+            try:
+                self.immutable_object.name = ModelState.MUTABLE_STATE
+                self.immutable_object.save()
+            except Exception as e:
+                raise e
 
 
 class TestRelation(TestModelImmutability, TestCase):
@@ -125,6 +146,23 @@ class TestMultiForwardRelation(TestModelImmutability, TestCase):
                 related_field=ImmutableReverseRelationModel.objects.create()
             )
         )
+
+    def test_can_update_field_when_model_is_mutable(self):
+        self.multi_rel_immutable_object.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.save()
+        self.multi_rel_immutable_object.related_field.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.related_field.save()
+        self.immutable_object.name = 'Mutable'
+        self.immutable_object.save()
+        self.assertEqual(self.immutable_object.name, 'Mutable')
+
+    def test_can_delete_when_model_is_mutable(self):
+        self.multi_rel_immutable_object.related_field.state = ModelState.MUTABLE_STATE
+        self.multi_rel_immutable_object.related_field.save()
+        self.immutability_depend_object.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.save()
+        self.immutable_object.delete()
+        self.assertEqual(0, len(self.immutable_model.objects.all()))
 
 
 class TestReverseRelation(TestModelImmutability, TestCase):
@@ -183,6 +221,23 @@ class TestForwardReverseRelation(TestModelImmutability, TestCase):
             related_field=base_immutable_model
         )
 
+    def test_can_update_field_when_model_is_mutable(self):
+        self.immutability_depend_object.related_field.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.related_field.save()
+        self.immutability_depend_object.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.save()
+        self.immutable_object.name = 'Mutable'
+        self.immutable_object.save()
+        self.assertEqual(self.immutable_object.name, 'Mutable')
+
+    def test_can_delete_when_model_is_mutable(self):
+        self.immutability_depend_object.related_field.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.related_field.save()
+        self.immutability_depend_object.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.save()
+        self.immutable_object.delete()
+        self.assertEqual(0, len(self.immutable_model.objects.all()))
+
 
 class TestReverseForwardRelation(TestModelImmutability, TestCase):
     immutable_model = ImmutableMultiMixRelModel
@@ -198,13 +253,31 @@ class TestReverseForwardRelation(TestModelImmutability, TestCase):
     def setUp(self):
         self.reverse_forward_rel_object = self.immutable_model.objects.create()
         self.end_relation = ImmutableReverseRelationModel.objects.create()
-        ModelWithRelation.objects.create(
+        self.modedl_with_rel = ModelWithRelation.objects.create(
             related_field2=self.reverse_forward_rel_object,
             related_field=self.end_relation
         )
 
+    def test_can_delete_when_model_is_mutable(self):
+        self.modedl_with_rel.state = ModelState.MUTABLE_STATE
+        self.modedl_with_rel.save()
+        self.immutability_depend_object.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.save()
+        self.immutable_object.delete()
+        self.assertEqual(0, len(self.immutable_model.objects.all()))
+
+    def test_can_update_field_when_model_is_mutable(self):
+        self.modedl_with_rel.state = ModelState.MUTABLE_STATE
+        self.modedl_with_rel.save()
+        self.immutability_depend_object.state = ModelState.MUTABLE_STATE
+        self.immutability_depend_object.save()
+        self.immutable_object.name = 'Mutable'
+        self.immutable_object.save()
+        self.assertEqual(self.immutable_object.name, 'Mutable')
+
 
 class TestModelImmutabilityDeleteAllowed(TestCase):
+
     def setUp(self):
         self.immutable_object = ImmutableModelAllowDelete.objects.create()
 
@@ -218,7 +291,6 @@ class TestModelImmutabilityUpdateAllowed(TestCase):
         self.immutable_object = ImmutableModelAllowUpdate.objects.create()
 
     def test_can_update(self):
-        self.immutable_object.update_attribute('name', 'Mutable')
+        self.immutable_object.name = 'Mutable'
+        self.immutable_object.save()
         self.assertEqual(self.immutable_object.name, 'Mutable')
-
-
