@@ -56,10 +56,7 @@ class MutabilityRule:
 
         self.error_message = error_message
 
-    def __name__(self):
-        return f"{self.field_rule} {self.values}"
-
-    def is_mutable(self, model_instance, field_parts=None) -> bool:
+    def is_mutable(self, model_instance, field_parts=None):
         """
         Check if model obj is in mutable state.
         Model obj is in mutable state if field defined by rule has
