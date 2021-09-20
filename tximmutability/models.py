@@ -104,8 +104,6 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
             return True
 
         for field, value in self.model_instance.tracker.changed().items():
-            logger.info(_("Field updated"), field, value)
-
             if field in rule.exclude_fields:
                 # excluded field
                 continue

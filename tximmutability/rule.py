@@ -83,11 +83,11 @@ class MutabilityRule:
             try:
                 rel = opts.get_field(field_name)
             except FieldDoesNotExist:
-                logger.warning(_("Field does not exist"))
+                logger.warning(_(f"Field does not exist - {field_name}"))
                 return True
             if isinstance(rel, (RelatedField, ForeignObjectRel)):
                 # field is forward or reverse relation
-                rel_parts = field_parts[field_parts.index(field_name) + 1 :]
+                rel_parts = field_parts[field_parts.index(field_name) + 1:]
                 if isinstance(rel, ForeignObjectRel):
                     field_name = rel.get_accessor_name()
                 field_val = getattr(model_instance, field_name)
