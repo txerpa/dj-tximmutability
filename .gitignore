@@ -23,13 +23,12 @@ lib64
 pip-log.txt
 
 # Unit test / coverage reports
-.coverage
+/coverage/
+coverage.*
 .tox
 nosetests.xml
-htmlcov
+/htmlcov/
 
-# Translations
-*.mo
 
 # Mr Developer
 .mr.developer.cfg
@@ -45,3 +44,7 @@ output/*/index.html
 
 # Sphinx
 docs/_build
+
+!.gitignore
+# !.github
+# !.pre-commit-config.yaml
