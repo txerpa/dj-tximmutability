@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:33+0200\n"
+"POT-Creation-Date: 2021-10-20 10:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,36 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:34
-msgid "This item could not be %(action)."
+#: models.py:36
+#, python-brace-format
+msgid "This item could not be {self.action}."
 msgstr ""
 
-#: models.py:60
+#: models.py:63
 msgid "create"
 msgstr ""
 
-#: models.py:70
+#: models.py:73
 msgid "update"
 msgstr ""
 
-#: models.py:104
-msgid "Field updated"
-msgstr ""
-
-#: models.py:123
+#: models.py:124
 msgid "delete"
 msgstr ""
 
-#: models.py:153
+#: models.py:170
 #, python-format
 msgid "%s.mutability_rules attribute must be a list."
 msgstr ""
 
-#: models.py:156
+#: models.py:180
 #, python-format
 msgid "%s.mutability_rule attribute must be an instance of \"MutabilityRule\"."
 msgstr ""
 
-#: rule.py:78
-msgid "Field does not exist"
+#: rule.py:86
+#, python-brace-format
+msgid "Field does not exist - {field_name}"
 msgstr ""
