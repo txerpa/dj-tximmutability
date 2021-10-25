@@ -1,4 +1,0 @@
-bumpversion==0.5.3
-black==21.7b0
-wheel==0.29.0
-

@@ -1,28 +1,42 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import logging
+from abc import ABCMeta, abstractmethod
+
+from django.core.exceptions import ValidationError
 from django.db import models
-from rest_framework.serializers import ValidationError
-from tximmutability.rule import ImmutabilityRule
-from abc import ABCMeta, abstractmethod, abstractproperty
+from django.utils.translation import gettext as _
+from model_utils import FieldTracker
+
+from tximmutability.rule import MutabilityRule
+
+logger = logging.getLogger('tximmutability')
 
 
-class ImmutableModelAction(object):
+class BaseMutableModelAction(object):
     """
-    Action performed on the instance of an immutable model.
-    To implement concrete ImmutableModelAction it is obligatory to define action name 
+    Action performed on the instance of an mutable model.
+    To implement concrete MutableModelAction it is obligatory to define action name
     and to implement is_allowed method
 
-    To validate action against immutability rules call validate(rules) method  
+    To validate action against immutability rules call validate(rules) method
     """
+
+    # output = _('Today is %(month)s %(day)s.') % {'month': m, 'day': d}
     __metaclass__ = ABCMeta
 
     def __init__(self, model_instance):
         self.model_instance = model_instance
 
-    @abstractmethod
+    def error_message(self, rule=None):
+        return rule.error_message % {'action': self.action} or _(
+            f'This item could not be {self.action}.'
+        )
+
+    @property
     def name(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def is_allowed(self, rule):
@@ -33,33 +47,44 @@ class ImmutableModelAction(object):
         """
         pass
 
-    def validate(self, immutability_rules):
+    def validate(self, mutability_rules):
         """
-        :param: ImmutableModelAction []
-        :raise: ValidationError 
+        :param: MutableModelAction []
+        :raise: ValidationError
         """
-        for rule in immutability_rules:
+        for rule in mutability_rules:
             if not self.is_allowed(rule):
-                message = rule.error_message or 'No se puede {action} ítem'
-                raise ValidationError(message.format(action=self.name))
+                raise ValidationError(self.error_message(rule))
 
 
-class ImmutableModelCreate(ImmutableModelAction):
-    name = 'crear'
+class BaseMutableModelCreate(BaseMutableModelAction):
+    action = _('create')
 
     def is_allowed(self, rule):
         """
         Create is allowed if rule byself allow creation or if model is in mutable state
         """
-        return rule.allow_create or rule.is_object_mutable(self.model_instance)
+        return rule.exclude_on_create or rule.is_mutable(self.model_instance)
 
 
-class ImmutableModelUpdate(ImmutableModelAction):
-    name = 'editar'
+class BaseMutableModelUpdate(BaseMutableModelAction):
+    action = _('update')
+    errors = {}
 
-    def __init__(self, model_instance, field_name):
-        super(ImmutableModelUpdate, self).__init__(model_instance)
-        self.field_name = field_name
+    def __init__(self, model_instance):
+        self.errors = {}
+        super(BaseMutableModelUpdate, self).__init__(model_instance)
+
+    def validate(self, mutability_rules):
+        """
+        :param: MutableModelAction []
+        :raise: ValidationError
+        """
+        for rule in mutability_rules:
+            self.is_allowed(rule)
+
+        if self.errors:
+            raise ValidationError(self.errors)
 
     def is_allowed(self, rule):
         """
@@ -71,88 +96,113 @@ class ImmutableModelUpdate(ImmutableModelAction):
         :param rule: ImmutabilityRule
         :return: bool
         """
-        return rule.allow_update or rule.field_name == self.field_name or rule.excluded_field(self.field_name) \
-            or rule.is_object_mutable(self.model_instance)
+
+        allowed = True
+        if rule.exclude_on_update:
+            return True
+
+        for field, value in self.model_instance.tracker.changed().items():
+            if field in rule.exclude_fields:
+                # excluded field
+                continue
+
+            if field == rule.field_rule:
+                # same rule field
+                continue
+
+            # [tup[1] for tup in string.Formatter().parse(my_string) if tup[1] is not None]
+            if not rule.is_mutable(self.model_instance):
+                self.errors[field] = self.error_message(rule)
+                allowed = False
+
+        return allowed
 
 
-class ImmutableModelDelete(ImmutableModelAction):
-    name = 'borrar'
+class BaseMutableModelDelete(BaseMutableModelAction):
+    action = _('delete')
 
     def is_allowed(self, rule):
         """
         Delete of the instance is allowed if rule by self allow delete or if instance is in mutable state
         """
-        return rule.allow_delete or rule.is_object_mutable(self.model_instance)
+        return rule.exclude_on_delete or rule.is_mutable(self.model_instance)
 
 
-class ImmutableModel(models.Model):
+class AbstractFieldTracker(FieldTracker):
+    def finalize_class(self, sender, name='tracker', **kwargs):
+        self.name = name
+        self.attname = '_%s' % name
+        if not hasattr(sender, name):
+            super().finalize_class(sender, **kwargs)
+
+
+class MutableModel(models.Model):
     """
-     Immutable model is a model which has set of immutability rules defined in param immutability_rules.
-     By the each rule is defined the case when an instance of the given model is immutable.
+    Immutable model is a model which has set of immutability rules defined in param mutability_rules.
+    By the each rule is defined the case when an instance of the given model is immutable.
 
-     Whenever an action (update, create or delete) is called, it will be validated for the each rule
-     in order to check whether there is a rule for which is not allowed to perform action.
+    Whenever an action (update, create or delete) is called, it will be validated for the each rule
+    in order to check whether there is a rule for which is not allowed to perform action.
 
-     If you want to ignore immutability rules and force execution of the action set param force to True
+    If you want to ignore immutability rules and force execution of the action set param force to True
     """
-    immutability_rules = ()
+
+    mutability_rules = ()
+    trackable_fields = None
 
     class Meta:
         abstract = True
 
     def __init__(self, *args, **kwargs):
-        super(ImmutableModel, self).__init__(*args, **kwargs)
-        self.check_immutability_rules()
+        # Workaround for FieldTracker issue: https://github.com/jazzband/django-model-utils/issues/155
+        tracker = AbstractFieldTracker(fields=self.trackable_fields)
+        tracker.finalize_class(self.__class__)
+        self.check_mutability_rules()
+        super().__init__(*args, **kwargs)
 
-    def check_immutability_rules(self):
-        if not isinstance(self.immutability_rules, (tuple, list)):
-            raise TypeError('immutability_rules attribute in %s must be '
-                            'a list' % self.Meta.verbose_name)
-        if any(not isinstance(rule, ImmutabilityRule) for rule in self.immutability_rules):
-            raise TypeError('%s: immutability rule item has to be ImmutabilityRule type' % self.Meta.verbose_name)
+    def check_mutability_rules(self):
+        model_name = getattr(self.Meta, 'verbose_name', self.__class__.__name__)
+        if not isinstance(self.mutability_rules, (tuple, list)):
+            raise TypeError(
+                _(
+                    '%s.mutability_rules attribute must be '
+                    'a list.' % model_name
+                )
+            )
+        if any(
+            not isinstance(rule, MutabilityRule)
+            for rule in self.mutability_rules
+        ):
+            raise TypeError(
+                _(
+                    '%s.mutability_rule attribute must be an instance of \"MutabilityRule\".'
+                    % model_name
+                )
+            )
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            ImmutableModelCreate(self).validate(self.immutability_rules)
-        super(ImmutableModel, self).save(*args, **kwargs)
-
-    def update(self, validated_data, force=False, save_kwargs={}):
-        """
-        Set each attribute on the instance, and then save it.
-        In case of error, accumulate them and after checking all fields
-        raise an ValidationError with all error messages
-        :param validated_data: {{*}}
-        :param force: bool if update need to be forced 
-        :param save_kwargs: kwargs params passed to django save method
-        :raise: ValidationError 
-        """
-        errors = {}
-        for field, value in validated_data.items():
-            try:
-                self.update_attribute(field, value, force=force)
-            except ValidationError as exc:
-                errors[field] = exc.detail
-        if errors:
-            raise ValidationError(errors)
-        self.save(**save_kwargs)
-
-    def update_attribute(self, name, value, force=False):
-        """
-        Update attribute value only after checking its mutability
-        To force update set parameter force to True 
-        :param name: attribute name
-        :param value: new attribute value
-        """
-        if not force:
-            ImmutableModelUpdate(self, name).validate(self.immutability_rules)
-        setattr(self, name, value)
+        tx_force = kwargs.pop("force", False)
+        if not tx_force:
+            if not self.pk:
+                BaseMutableModelCreate(self).validate(self.mutability_rules)
+            else:
+                BaseMutableModelUpdate(self).validate(self.mutability_rules)
+        super(MutableModel, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """
         Delete object if there is no restrictions
         To force delete set param force to True
         """
-        is_forced_action = kwargs.pop('force', False)
-        if not is_forced_action:
-            ImmutableModelDelete(self).validate(self.immutability_rules)
-        super(ImmutableModel, self).delete(*args, **kwargs)
+        tx_force = kwargs.pop('force', False)
+        if not tx_force:
+            BaseMutableModelDelete(self).validate(self.mutability_rules)
+        super(MutableModel, self).delete(*args, **kwargs)
+
+    def saved_value(self, field):
+        """
+        Method to get field value saved at DB.
+        """
+        raise NotImplementedError(
+            "Subclasses of MutableModel must provide a \"saved_value\" method"
+        )
