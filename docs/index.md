@@ -24,7 +24,6 @@ git clone https://github.com/encode/django-rest-framework
 ## Example
 
 #### Customize your model code with MutabilityRule like this:
-
 ```python
 from tximmutability.models import MutableModel
 
