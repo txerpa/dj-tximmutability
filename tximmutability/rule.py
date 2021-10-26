@@ -1,12 +1,10 @@
 # coding=utf-8
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import logging
 
 from django.db.models import FieldDoesNotExist
-from django.db.models.fields.related import ForeignObjectRel
-from django.db.models.fields.related import RelatedField
+from django.db.models.fields.related import ForeignObjectRel, RelatedField
 from django.utils.translation import gettext as _
 
 logger = logging.getLogger('txmutability')
@@ -87,7 +85,7 @@ class MutabilityRule:
                 return True
             if isinstance(rel, (RelatedField, ForeignObjectRel)):
                 # field is forward or reverse relation
-                rel_parts = field_parts[field_parts.index(field_name) + 1:]
+                rel_parts = field_parts[field_parts.index(field_name) + 1 :]
                 if isinstance(rel, ForeignObjectRel):
                     field_name = rel.get_accessor_name()
                 field_val = getattr(model_instance, field_name)

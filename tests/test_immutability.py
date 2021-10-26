@@ -1,20 +1,21 @@
 # coding=utf-8
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from tests.testapp.constants import ModelState
-from tests.testapp.models import BaseImmutableModel
-from tests.testapp.models import ImmutableModelAllowDelete
-from tests.testapp.models import ImmutableModelAllowUpdate
-from tests.testapp.models import ImmutableMultiForwardRelModel
-from tests.testapp.models import ImmutableMultiMixRelModel
-from tests.testapp.models import ImmutableMultiReverseRelModel
-from tests.testapp.models import ImmutableRelationModel
-from tests.testapp.models import ImmutableReverseRelationModel
-from tests.testapp.models import ModelWithRelation
+from tests.testapp.models import (
+    BaseImmutableModel,
+    ImmutableModelAllowDelete,
+    ImmutableModelAllowUpdate,
+    ImmutableMultiForwardRelModel,
+    ImmutableMultiMixRelModel,
+    ImmutableMultiReverseRelModel,
+    ImmutableRelationModel,
+    ImmutableReverseRelationModel,
+    ModelWithRelation,
+)
 
 
 class TestModelImmutability(object):

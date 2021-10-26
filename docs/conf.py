@@ -11,7 +11,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -193,10 +194,10 @@ latex_documents = [
     (
         'index',
         'dj-tximmutability.tex',
-        u'Django Txerpa Immutability Documentation',
-        u'Marija Milicevic',
+        'Django Txerpa Immutability Documentation',
+        'Marija Milicevic',
         'manual',
-    ),
+    )
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -247,12 +248,12 @@ texinfo_documents = [
     (
         'index',
         'dj-tximmutability',
-        u'Django Txerpa Immutability Documentation',
-        u'Marija Milicevic',
+        'Django Txerpa Immutability Documentation',
+        'Marija Milicevic',
         'dj-tximmutability',
         'One line description of project.',
         'Miscellaneous',
-    ),
+    )
 ]
 
 # Documents to append as an appendix to all manuals.
