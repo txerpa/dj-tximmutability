@@ -194,8 +194,8 @@ latex_documents = [
     (
         'index',
         'dj-tximmutability.tex',
-        u'Django Txerpa Immutability Documentation',
-        u'Marija Milicevic',
+        'Django Txerpa Immutability Documentation',
+        'Marija Milicevic',
         'manual',
     )
 ]
@@ -248,8 +248,8 @@ texinfo_documents = [
     (
         'index',
         'dj-tximmutability',
-        u'Django Txerpa Immutability Documentation',
-        u'Marija Milicevic',
+        'Django Txerpa Immutability Documentation',
+        'Marija Milicevic',
         'dj-tximmutability',
         'One line description of project.',
         'Miscellaneous',
