@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.4.0
+  rev: v4.0.1
   hooks:
   - id: check-added-large-files
   - id: check-case-conflict
@@ -9,12 +9,12 @@ repos:
   - id: check-symlinks
   - id: check-toml
 - repo: https://github.com/pycqa/isort
-  rev: 5.8.0
+  rev: 5.9.3
   hooks:
   - id: isort
     args: ["--profile", "black"]
 - repo: https://github.com/psf/black
-  rev: stable
+  rev: 21.9b0
   hooks:
   - id: black
     language_version: python3.8
