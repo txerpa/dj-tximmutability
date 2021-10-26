@@ -1,4 +1,4 @@
-# Dj-Tximmutability Docs
+# Dj-Tximmutability
 
 Dj-Immutability is a small Django utils (Models Mixin, classes) that allows you to create mutability rules to make the model immutable with respect to the rules. It easy to use and combine with your models.
 
