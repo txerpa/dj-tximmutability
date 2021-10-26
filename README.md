@@ -15,7 +15,7 @@
 
 Dj-Immutability is a Django application that allows you to create mutability rules to make the model immutable with respect to the rules.
 
-## supports 
+## Supports 
 
 Python: (3.6, 3.7, 3.8, 3.9)  
 Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
