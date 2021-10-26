@@ -1,10 +1,9 @@
 name: Codecov
 
-on: [push]
-#  push:
-#    branches: [ master ]
-#  pull_request:
-#    branches: [ master ]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
 jobs:
   coverage:
