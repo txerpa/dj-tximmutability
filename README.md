@@ -15,10 +15,10 @@
 
 Dj-Immutability is a Django application that allows you to create mutability rules to make the model immutable with respect to the rules.
 
-## Dj-Immutability supports 
+## supports 
 
-Python: `3.5`, `3.6`, `3.7`, `3.8` and `3.9`  
-Django: `>=1.8`, `<=3.2.x`
+Python: (3.6, 3.7, 3.8, 3.9)  
+Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
 
 <!--
 ##Documentation
@@ -89,10 +89,3 @@ workon <YOURVIRTUALENV>
 
 TODO
 -->
-
-##Credits
-
-Tools used in rendering this package:
-
-*  [Cookiecutter](https://github.com/audreyr/cookiecutter)
-*  [cookiecutter-djangopackage](https://github.com/pydanny/cookiecutter-djangopackage)
