@@ -21,7 +21,7 @@ Python: (3.6, 3.7, 3.8, 3.9)
 Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
 
 <!--
-##Documentation
+## Documentation
 
 The full documentation is at https://dj-tximmutability.readthedocs.io.
 -->
@@ -29,13 +29,13 @@ The full documentation is at https://dj-tximmutability.readthedocs.io.
 
 ## Quickstart
 
-###Install Django Txerpa Immutability
+### Install Django Txerpa Immutability
  
 ```bash
 pip install git+https://github.com/txerpa/dj-tximmutability.git@master#egg=dj-tximmutability
 ```
 
-###Customize your model code with MutabilityRule like this:
+### Customize your model code with MutabilityRule like this:
 
 ```python
 from tximmutability.models import MutableModel
@@ -59,7 +59,7 @@ class Article(MutableModel):
     )
 ```
 
-##Running Tests
+## Running Tests
 
 Does the code actually work?
 
