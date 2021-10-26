@@ -18,5 +18,7 @@ jobs:
           pip install -e .
       - name: Execute coverage
         run: |
-          coverage run runtests.py
-          codecov -n codecov-umbrella -v -t ${{ secrets.CODECOV_TOKEN }}
+          coverage  run runtests.py
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -t ${{ secrets.CODECOV_TOKEN }}
