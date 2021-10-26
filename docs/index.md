@@ -5,8 +5,8 @@ Dj-Immutability is a small Django utils (Models Mixin, classes) that allows you 
 ## Requirements
 Dj-Tximmutability requires the following:
 
-* Python (3.6, 3.7, 3.8, 3.9)
-* Django (2.2, 3.0, 3.1, 3.2)
+* Python: (3.6, 3.7, 3.8, 3.9)
+* Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
 
 ## Instalation
 Install using pip.
