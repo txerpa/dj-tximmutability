@@ -17,8 +17,8 @@ Dj-Immutability is a Django application that allows you to create mutability rul
 
 ## Supports 
 
-Python: (3.6, 3.7, 3.8, 3.9)  
-Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
+* Python: (3.6, 3.7, 3.8, 3.9)  
+* Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
 
 <!--
 ## Documentation
@@ -69,12 +69,11 @@ pyenv install 3.9.2
 pyenv install 3.8.8
 pyenv install 3.7.7
 pyenv install 3.6.13
-pyenv install 3.5.3
 ```
 
 * Make them global with:
 ```bash
-pyenv global 3.9.2 3.8.8 3.7.7 3.6.13 3.5.3 
+pyenv global 3.9.2 3.8.8 3.7.7 3.6.13
 ```
 
 * Run tests
