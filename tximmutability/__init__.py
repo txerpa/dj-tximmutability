@@ -2,4 +2,3 @@
 __version__ = '1.0.0'
 __author__ = "Marija Milicevic"
 __email__ = "marija.milicevic@txerpa.com"
-default_app_config = "impostor.apps.ImpostorConfig"

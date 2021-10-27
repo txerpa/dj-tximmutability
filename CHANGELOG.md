@@ -7,7 +7,7 @@
 * Drop support for Python <= 3.5
 * Add support for Python 3.7, 3.8, 3.9
 * Add support for Django 1.11, 2, 2.1, 2.2, 3.0, 3.1, 3.2
-* Dropped usage of six `django-rest-framework`
+* Dropped usage of `django-rest-framework`
 * Rename nomenclature ``Immutability`` to ``Mutability``.
 * Rename ``Rule`` class attributes.
 * Delete ``update()`` method from ``MutableModel``. Mange this logic in ``save()``.

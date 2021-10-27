@@ -19,7 +19,7 @@ pip install git+https://github.com/txerpa/dj-tximmutability.git@master#egg=dj-tx
 ```
 ...or clone the project from github.
 ```bash
-git clone https://github.com/encode/django-rest-framework
+git clone https://github.com/txerpa/dj-tximmutability
 ```
 > **Pending to punblish on PyPI**
 
