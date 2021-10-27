@@ -11,9 +11,9 @@ Types of Contributions
 ----------------------
 
 Report Bugs
-~~~~~~~~~~~
+----
 
-Report bugs at https://github.com/marija_milicevic/dj-tximmutability/issues.
+Report bugs at https://github.com/txerpa/dj-tximmutability/issues.
 
 If you are reporting a bug, please include:
 

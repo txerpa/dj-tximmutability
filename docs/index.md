@@ -1,12 +1,12 @@
-# Dj-Tximmutability Docs
+# Dj-Tximmutability
 
 Dj-Immutability is a small Django utils (Models Mixin, classes) that allows you to create mutability rules to make the model immutable with respect to the rules. It easy to use and combine with your models.
 
 ## Requirements
 Dj-Tximmutability requires the following:
 
-Python (3.6, 3.7, 3.8, 3.9)
-Django (2.2, 3.0, 3.1, 3.2)
+* Python: (3.6, 3.7, 3.8, 3.9)
+* Django: (1.8, 1.9, 1.10, 1.11, 2.1, 2.2, 3.0, 3.1, 3.2)
 
 ## Instalation
 Install using pip.
@@ -24,7 +24,6 @@ git clone https://github.com/encode/django-rest-framework
 ## Example
 
 #### Customize your model code with MutabilityRule like this:
-
 ```python
 from tximmutability.models import MutableModel
 
