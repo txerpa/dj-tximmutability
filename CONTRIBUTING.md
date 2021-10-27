@@ -35,7 +35,7 @@ articles, and such.
 
 ### Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/marija_milicevic/dj-tximmutability/issues.
+The best way to send feedback is to file an issue at https://github.com/txerpa/dj-tximmutability/issues.
 
 If you are proposing a feature:
 
