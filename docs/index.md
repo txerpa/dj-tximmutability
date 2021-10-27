@@ -126,7 +126,8 @@ workon <YOURVIRTUALENV>
 ```
 
 
-[contributing]( ../CONTRIBUTING.md)
+### [CONTRIBUTING]( ../CONTRIBUTING.md)
+### [CHANGELOG]( ../CHANGELOG.md)
 
 <!--
 ##Features
