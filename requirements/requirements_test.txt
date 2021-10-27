@@ -1,5 +1,6 @@
 coverage==4.3.4
 mock>=1.0.1
 pre-commit==2.15.0
+tox>=1.7.0
 
 # Additional test requirements go here
