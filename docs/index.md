@@ -126,10 +126,13 @@ workon <YOURVIRTUALENV>
 ```
 
 
-{% include_relative ../CONTRIBUTING.md %}
+### [CONTRIBUTING]( ../CONTRIBUTING.md)
+### [CHANGELOG]( ../CHANGELOG.md)
+
 
 <!--
 ##Features
 
 TODO
+
 -->
