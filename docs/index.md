@@ -79,7 +79,7 @@ class Article(MutableModel):
 
 ### Custom error message.
 
-`MutabilityRule` can return a custom message error, adding `error_message` kward.
+`MutabilityRule` can return a custom message error, adding `error_message` kwargs.
 ```python
 ...
 from tximmutability.models import MutableModel
