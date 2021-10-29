@@ -26,7 +26,7 @@ git clone https://github.com/txerpa/dj-tximmutability
 
 ## Example
 
-### Minimum implementation.
+### Minimal implementation.
 Create a `MutabilityRule` over the` state` field when it is ** draft **.
 This means that this model is mutable only when `state == 'draft'`.
 
