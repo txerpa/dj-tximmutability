@@ -101,8 +101,13 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         if rule.exclude_on_update:
             return True
 
+        db_column_names = [
+            self.model_instance._meta.get_field(f).column
+            for f in rule.exclude_fields
+        ]
+
         for field, value in self.model_instance.tracker.changed().items():
-            if field in rule.exclude_fields:
+            if field in db_column_names:
                 # excluded field
                 continue
 
