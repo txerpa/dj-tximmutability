@@ -12,6 +12,9 @@ class AbstractImmutableModel(MutableModel):
     name = models.CharField(
         null=False, max_length=50, default='Immutable Model'
     )
+    surname = models.CharField(
+        null=False, max_length=100, default='Immutable Model'
+    )
     state = models.CharField(max_length=50, default=ModelState.IMMUTABLE_STATE)
 
     @staticmethod

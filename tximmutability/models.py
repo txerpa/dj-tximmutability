@@ -105,7 +105,7 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
             self.model_instance._meta.get_field(f).column
             for f in rule.exclude_fields
         ]
-
+        _is_mutable = rule.is_mutable(self.model_instance)
         for field, value in self.model_instance.tracker.changed().items():
             if field in db_column_names:
                 # excluded field
@@ -115,8 +115,7 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
                 # same rule field
                 continue
 
-            # [tup[1] for tup in string.Formatter().parse(my_string) if tup[1] is not None]
-            if not rule.is_mutable(self.model_instance):
+            if not _is_mutable:
                 self.errors[field] = self.error_message(rule)
                 allowed = False
 

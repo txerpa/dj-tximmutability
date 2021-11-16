@@ -16,6 +16,7 @@ from tests.testapp.models import (
     ImmutableReverseRelationModel,
     ModelWithRelation,
 )
+from tximmutability.models import BaseMutableModelUpdate
 
 
 class TestModelImmutability(object):
@@ -97,6 +98,18 @@ class TestBaseModel(TestModelImmutability, TestCase):
                 self.immutable_object.save()
             except Exception as e:
                 raise e
+
+    def test_update_model_when_immutable_field_is_included(self):
+        self.immutable_object.surname = "test"
+        self.immutable_object.name = 'Mutable'
+
+        rule = self.immutable_object.mutability_rules[0]
+        update_mutability = BaseMutableModelUpdate(self.immutable_object)
+        update_mutability.is_allowed(rule)
+
+        self.assertEqual(
+            set(["name", "surname"]), update_mutability.errors.keys()
+        )
 
     def test_custom_error_message_on_delete(self):
         with self.assertRaisesMessage(
