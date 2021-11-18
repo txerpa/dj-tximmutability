@@ -1,0 +1,25 @@
+name: Codecov
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+      - name: Install Coverage
+        run: |
+          pip install -r requirements/requirements_test.txt
+          pip install -e .
+          pip install coverage==6.0.2
+      - name: Execute coverage
+        run: |
+          coverage  run runtests.py
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -t ${{ secrets.CODECOV_TOKEN }}

@@ -23,13 +23,14 @@ lib64
 pip-log.txt
 
 # Unit test / coverage reports
+/coverage/
 .coverage
+codecov
+coverage.xml
 .tox
 nosetests.xml
-htmlcov
+/htmlcov/
 
-# Translations
-*.mo
 
 # Mr Developer
 .mr.developer.cfg
@@ -39,9 +40,16 @@ htmlcov
 # Pycharm/Intellij
 .idea
 
+# Translations
+*.mo
+
 # Complexity
 output/*.html
 output/*/index.html
 
 # Sphinx
 docs/_build
+
+!.gitignore
+# !.github
+# !.pre-commit-config.yaml

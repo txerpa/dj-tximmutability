@@ -1,1 +1,4 @@
-__version__ = '0.2.0'
+"""Django Txerpa Immutability"""
+__version__ = "1.0.0"
+__author__ = "Marija Milicevic"
+__email__ = "marija.milicevic@txerpa.com"
