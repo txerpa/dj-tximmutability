@@ -1,32 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import codecs
 import os
 import re
 import sys
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import find_packages, setup
 
 
-def get_version(*file_paths):
-    """Retrieves the version from tximmutability/__init__.py"""
-    filename = os.path.join(os.path.dirname(__file__), *file_paths)
-    version_file = open(filename).read()
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError('Unable to find version string.')
-
-
-version = get_version("tximmutability", "__init__.py")
+def get_metadata(package, field):
+    """
+    Return package data as listed in `__{field}__` in `init.py`.
+    """
+    init_py = codecs.open(
+        os.path.join(package, '__init__.py'), encoding='utf-8'
+    ).read()
+    match = re.search(
+        "^__{}__ = ['\"]([^'\"]+)['\"]".format(field), init_py, re.MULTILINE
+    )
+    if match:
+        return match.group(1)
+    raise RuntimeError('Unable to find {} string.'.format(field))
 
 
 if sys.argv[-1] == 'publish':
     try:
         import wheel
+
         print("Wheel version: ", wheel.__version__)
     except ImportError:
         print('Wheel library missing. Please run "pip install wheel"')
@@ -35,45 +35,61 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py bdist_wheel upload')
     sys.exit()
 
+version = get_metadata("tximmutability", "version")
+author = get_metadata("tximmutability", "author")
+email = get_metadata("tximmutability", "email")
+
 if sys.argv[-1] == 'tag':
     print("Tagging the version on git:")
     os.system("git tag -a %s -m 'version %s'" % (version, version))
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+with open('README.md', 'r') as f:
+    readme = f.read()
+
+with open('CHANGELOG.md', 'r') as f:
+    history = f.read().replace('.. :changelog:', '')
 
 setup(
     name='dj-tximmutability',
     version=version,
-    description="""Your project description goes here""",
-    long_description=readme + '\n\n' + history,
-    author='Marija Milicevic',
-    author_email='marija.milicevic@txerpa.com',
-    url='https://github.com/marija_milicevic/dj-tximmutability',
-    packages=[
-        'tximmutability',
-    ],
+    description='Mutability rules for Django models.',
+    long_description=readme,
+    long_description_content_type='text/markdown',
+    author=author,
+    author_email=email,
+    url='https://github.com/txerpa/dj-tximmutability',
+    packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=[],
-    license="MIT",
+    install_requires=["Django>=2.2,<=3", "django-model-utils==4.1.1"],
+    python_requires=">=3.6",
+    license='MIT License',
     zip_safe=False,
-    keywords='dj-tximmutability',
+    keywords=['django', 'tximmutability', 'immutability', 'mutability'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.8',
         'Framework :: Django :: 1.9',
         'Framework :: Django :: 1.10',
+        'Framework :: Django :: 1.11',
+        'Framework :: Django :: 2.0',
+        'Framework :: Django :: 2.1',
+        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Topic :: Utilities',
     ],
 )

@@ -1,6 +1,7 @@
-include AUTHORS.rst
-include CONTRIBUTING.rst
-include HISTORY.rst
+include AUTHORS
 include LICENSE
-include README.rst
+include CONTRIBUTING.md
+include CHANGELOG.md
+include README.md
 recursive-include tximmutability *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
+global-exclude *.pyc
