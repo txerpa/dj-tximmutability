@@ -2,6 +2,18 @@
 
 # Changelog
 
+## 2.0.0 (2022-02-04)
+
+* Drop support for Python <= 3.7
+* Add support for Python 3.10
+* Drop support for Django <= 2.2
+* Feature - add ``Rule`` attr ``conditions``.
+* Feature - add ``Rule`` attr ``exclusion_conditions``.
+* Feature - add ``Rule`` attr ``error_code`` to ``ValidationError``.
+* Feature dependency django-models-utils to implement ``FieldTracker``.
+* Test with **pytest**.
+
+
 ## 1.0.0 (2021-03-29)
 
 * Drop support for Python <= 3.5

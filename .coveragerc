@@ -1,11 +1,10 @@
 [run]
-branch = true
+source=tximmutability
 
 [report]
 omit =
-    *site-packages*
-    *tests*
-    *.tox*
+    */locale/*
+    */tests/*
 show_missing = True
 exclude_lines =
     raise NotImplementedError
