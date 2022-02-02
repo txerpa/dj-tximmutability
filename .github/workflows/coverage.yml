@@ -16,10 +16,9 @@ jobs:
         run: |
           pip install -r requirements/requirements_test.txt
           pip install -e .
-          pip install coverage==6.0.2
       - name: Execute coverage
         run: |
-          coverage  run runtests.py
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -t ${{ secrets.CODECOV_TOKEN }}
+          # execute tests with coverage
+          pytest --cov-report=xml --cov=tximmutability tests/
+          export CODECOV_TOKEN="${{ secrets.CODECOV_TOKEN }}"
+          bash <(curl -s https://codecov.io/bash)
