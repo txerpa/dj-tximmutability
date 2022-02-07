@@ -23,16 +23,15 @@ class BaseMutableModelAction(ABC):
         self.model_instance = None
         if isinstance(instance_or_queryset, QuerySet):
             self.queryset = instance_or_queryset
+            self.model_name = self.queryset.model.__name__
         else:
             self.model_instance = instance_or_queryset
+            self.model_name = self.model_instance.__class__.__name__
 
     def check_types(self, model_instance, mutability_rules):
-        model_name = getattr(
-            model_instance.Meta, 'verbose_name', self.__class__.__name__
-        )
         if not isinstance(mutability_rules, (tuple, list)):
             raise TypeError(
-                _('%s.mutability_rules attribute must be ' 'a list.' % model_name)
+                _('%s.mutability_rules attribute must be ' 'a list.' % self.model_name)
             )
         for x in filter(lambda e: isinstance(e, Or), mutability_rules):
             self.check_types(model_instance, x.rules_or_conditions)
@@ -45,7 +44,7 @@ class BaseMutableModelAction(ABC):
             raise TypeError(
                 _(
                     '%s.mutability_rule attribute must be an instance of '
-                    '\"MutabilityRule\".' % model_name
+                    '\"MutabilityRule\".' % self.model_name
                 )
             )
 
