@@ -27,11 +27,11 @@ class MutableQuerySet(models.QuerySet):
     def _pre_bulk_update_validate_immutability(self, *args, **kwargs):
         model = self.model
         update_fields = kwargs
-        if getattr(model, 'mutability_rules', None):
+        if getattr(model, '_mutability_rules', None):
             if self.exists():
                 BaseMutableModelUpdate(
-                    queryset=self, update_fields=update_fields.keys()
-                ).validate(model.mutability_rules)
+                    self, update_fields=update_fields.keys()
+                ).validate(model._mutability_rules)
 
     def update(self, *args, **kwargs):
         self._pre_bulk_update_validate_immutability(*args, **kwargs)
@@ -68,10 +68,6 @@ class MutableModel(models.Model):
         tracker.finalize_class(self.__class__)
         super().__init__(*args, **kwargs)
 
-    @property
-    def mutability_rules(self):
-        return self._mutability_rules
-
     def save(self, *args, **kwargs):
         tx_force = kwargs.pop("force", False)
         if not tx_force:
@@ -88,7 +84,7 @@ class MutableModel(models.Model):
         """
         tx_force = kwargs.pop('force', False)
         if not tx_force:
-            BaseMutableModelDelete(self).validate(self.mutability_rules)
+            BaseMutableModelDelete(self).validate(self._mutability_rules)
         super(MutableModel, self).delete(*args, **kwargs)
 
     def saved_value(self, field):
