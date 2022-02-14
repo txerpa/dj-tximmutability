@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-20 10:26-0500\n"
+"POT-Creation-Date: 2022-02-14 10:15-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,40 +18,44 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:36
+#: rule.py:93
+#, python-brace-format
+msgid "Model rule does not hold for action {action}, field "
+msgstr ""
+
+#: rule.py:139
 #, fuzzy, python-brace-format
-#| msgid "This item could not be %(action)."
-msgid "This item could not be {self.action}."
-msgstr "Este elemento no se puede %(action)."
+#| msgid "Field does not exist"
+msgid "Field does not exist - {field_name}"
+msgstr "El campo no existe"
 
-#: models.py:63
-msgid "create"
-msgstr "crear"
-
-#: models.py:73
-msgid "update"
-msgstr "actualizar"
-
-#: models.py:124
-msgid "delete"
-msgstr "eliminar"
-
-#: models.py:170
+#: services.py:40
 #, python-format
 msgid "%s.mutability_rules attribute must be a list."
 msgstr "El atributo %s.mutability_rules debe ser una lista."
 
-#: models.py:180
+#: services.py:52
 #, python-format
 msgid "%s.mutability_rule attribute must be an instance of \"MutabilityRule\"."
 msgstr ""
 "El atributo %s.mutability_rules debe ser una instancia de \"MutabilityRule\"."
 
-#: rule.py:86
-#, fuzzy, python-brace-format
-#| msgid "Field does not exist"
-msgid "Field does not exist - {field_name}"
-msgstr "El campo no existe"
+#: services.py:91
+msgid "update"
+msgstr "actualizar"
+
+#: services.py:138
+msgid "delete"
+msgstr "eliminar"
+
+#: services.py:150 services.py:153
+msgid "create"
+msgstr "crear"
+
+#, fuzzy
+#~| msgid "This item could not be %(action)."
+#~ msgid "This item could not be {self.action}."
+#~ msgstr "Este elemento no se puede %(action)."
 
 #~ msgid "Field updated"
 #~ msgstr "Campo actualizado"
