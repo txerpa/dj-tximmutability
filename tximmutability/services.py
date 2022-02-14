@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from abc import ABC, abstractmethod
 
 from django.core.exceptions import ValidationError
+from django.db.models.base import ModelBase
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
 
@@ -19,6 +20,10 @@ class BaseMutableModelAction(ABC):
     """
 
     def __init__(self, instance_or_queryset):
+        assert isinstance(instance_or_queryset, QuerySet) or isinstance(
+            instance_or_queryset.__class__, ModelBase
+        ), "Obj must be an instance of QuerySet or ModelBase"
+
         self.queryset = None
         self.model_instance = None
         if isinstance(instance_or_queryset, QuerySet):
@@ -31,7 +36,7 @@ class BaseMutableModelAction(ABC):
     def check_types(self, model_instance, mutability_rules):
         if not isinstance(mutability_rules, (tuple, list)):
             raise TypeError(
-                _('%s.mutability_rules attribute must be ' 'a list.' % self.model_name)
+                _('%s.mutability_rules attribute must be a list.' % self.model_name)
             )
         for x in filter(lambda e: isinstance(e, Or), mutability_rules):
             self.check_types(model_instance, x.rules_or_conditions)
@@ -124,7 +129,7 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         )
 
         if fields_to_check:
-            return rule.is_mutable(instance)
+            return rule.is_mutable(obj=self.model_instance or self.queryset)
         return True
 
 
@@ -136,18 +141,26 @@ class BaseMutableModelDelete(BaseMutableModelAction):
         Delete of the instance is allowed if rule by self allow delete or
         if instance is in mutable state
         """
-        return rule.exclude_on_delete or rule.is_mutable(self.model_instance)
+        return rule.exclude_on_delete or rule.is_mutable(
+            obj=self.model_instance or self.queryset
+        )
 
 
 class BaseMutableModelCreate(BaseMutableModelAction):
     action = _('create')
+
+    def __init__(self, *args, **kwargs):
+        self.action = _('create')
+        super().__init__(*args, **kwargs)
 
     def is_rule_met(self, rule, or_obj=None):
         """
         Create is allowed if rule byself allow creation or if model is in
         mutable state
         """
-        return rule.exclude_on_create or rule.is_mutable(self.model_instance)
+        return rule.exclude_on_create or rule.is_mutable(
+            obj=self.model_instance or self.queryset
+        )
 
 
 class Or:

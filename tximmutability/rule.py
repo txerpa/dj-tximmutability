@@ -2,8 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
+from typing import Tuple
 
 from django.core.exceptions import FieldDoesNotExist, ValidationError
+from django.db.models import QuerySet
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 from django.utils.translation import gettext as _
 
@@ -57,35 +59,39 @@ class MutabilityRule:
     def __init__(
         self,
         field_rule,
-        values=(),
-        exclude_fields=(),
+        values: Tuple = (),
+        exclude_fields: Tuple = (),
         exclude_on_create=True,
         exclude_on_update=False,
         exclude_on_delete=False,
-        conditions=None,
-        exclusion_conditions=None,
+        inst_conditions: Tuple = (),
+        inst_exclusion_conditions: Tuple = (),
+        queryset_conditions: Tuple = (),
+        queryset_exclusion_conditions: Tuple = (),
         error_message=None,
         error_code=None,
-    ):
-        """
-        param fields_data: dict {<field_name>: set(<values for each field>)},
-        like {"name": ('tim', 'tom', 'tam')}
-        """
+    ) -> None:
         self.field_rule = field_rule
         self.values = values
-        self.exclude_fields = exclude_fields
-
+        self.exclude_fields = exclude_fields or ()
+        # Actions mutable by.
         self.exclude_on_create = exclude_on_create
         self.exclude_on_update = exclude_on_update
         self.exclude_on_delete = exclude_on_delete
-        self.conditions = conditions
-        self.exclusion_conditions = exclusion_conditions
+        # Conditions attr
+        self.inst_conditions = inst_conditions or ()
+        self.inst_exclusion_conditions = inst_exclusion_conditions or ()
+        self.queryset_conditions = queryset_conditions or ()
+        self.queryset_exclusion_conditions = queryset_exclusion_conditions or ()
+        # Errors attr
         self.error_message = error_message
         self.error_code = error_code
 
     def get_error(self, action):
         message = (
-            self.error_message
+            self.error_message.format(
+                action=action, field_rule=self.field_rule, accepted_values=self.values
+            )
             if self.error_message
             else _(
                 f"Model rule does not hold for action {action}, field "
@@ -94,7 +100,7 @@ class MutabilityRule:
         )
         return ValidationError(message, code=self.error_code)
 
-    def is_mutable(self, model_instance):
+    def is_mutable(self, obj):
         """
         Check if model obj is in mutable state.
         Model obj is in mutable state if field defined by rule has
@@ -105,21 +111,22 @@ class MutabilityRule:
         (e.g 'state' or 'invoice__state')
         :return: bool
         """
-        if self.conditions and not self.all_conditions_met(
-            model_instance, self.conditions
-        ):
-            # Not all conditions met. So, It doesn't continue checking this
+        self.obj = obj
+        self.is_queryset = isinstance(obj, QuerySet)
+
+        if not self._all_conditions_met():
+            # Not all conditions met. It does not continue checking this
             # rule.
             return True
 
-        if self.exclusion_conditions and self.any_conditions_met(
-            model_instance, self.exclusion_conditions
-        ):
-            # Some conditions met from exclude_conditions. So, It doesn't
+        if self._any_conditions_met():
+            # Some conditions met from exclude_conditions. It does not
             # continue checking this rule.
             return True
-
-        return self.check_field_rule(model_instance)
+        if self.is_queryset:
+            return all(map(lambda instance: self.check_field_rule(instance), self.obj))
+        else:
+            return self.check_field_rule(obj)
 
     def check_field_rule(self, model_instance, field_parts=None):
         field_parts = field_parts or self.field_rule.split('__')
@@ -169,30 +176,46 @@ class MutabilityRule:
         else:
             return self.check_field_rule(value, field_parts=rel_parts)
 
-    def _check_codition(self, instance, condition):
-        condition = getattr(instance, condition)
-        if callable(condition):
-            return condition()
-        return condition
+    def _check_inst_codition(self, condition):
+        return condition(self.obj)
 
-    def all_conditions_met(self, instance, conditions):
+    def _check_query_codition(self, condition):
+        return self.obj.__getattribute__(condition.__name__)
+
+    def _all_conditions_met(self):
         """
         Check if all conditions have been met
         """
-        return all(
-            map(
-                lambda condition: self._check_codition(instance, condition),
-                conditions,
+        if self.is_queryset:
+            return all(
+                map(
+                    lambda condition: self._check_query_codition(condition),
+                    self.queryset_conditions,
+                )
             )
-        )
+        else:
+            return all(
+                map(
+                    lambda condition: self._check_inst_codition(condition),
+                    self.inst_conditions,
+                )
+            )
 
-    def any_conditions_met(self, instance, conditions):
+    def _any_conditions_met(self):
         """
         Check if all conditions have been met
         """
-        return any(
-            map(
-                lambda condition: self._check_codition(instance, condition),
-                conditions,
+        if self.is_queryset:
+            return any(
+                map(
+                    lambda condition: self._check_query_codition(condition),
+                    self.queryset_exclusion_conditions,
+                )
             )
-        )
+        else:
+            return any(
+                map(
+                    lambda condition: self._check_inst_codition(condition),
+                    self.inst_exclusion_conditions,
+                )
+            )
