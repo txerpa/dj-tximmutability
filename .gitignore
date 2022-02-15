@@ -40,9 +40,6 @@ nosetests.xml
 # Pycharm/Intellij
 .idea
 
-# Translations
-*.mo
-
 # Complexity
 output/*.html
 output/*/index.html
