@@ -4,10 +4,12 @@ from __future__ import absolute_import, unicode_literals
 import logging
 from typing import Tuple
 
-from django.core.exceptions import FieldDoesNotExist, ValidationError
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import QuerySet
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 from django.utils.translation import gettext as _
+
+from tximmutability.exceptions import RuleMutableException
 
 logger = logging.getLogger('txmutability')
 
@@ -94,11 +96,10 @@ class MutabilityRule:
             )
             if self.error_message
             else _(
-                f"Model rule does not hold for action {action}, field "
-                f"\"{self.field_rule}\" must have as values {self.values}"
+                f"The model rule does not hold for action {action}, field \"{self.field_rule}\" must have as values {self.values}"
             )
         )
-        return ValidationError(message, code=self.error_code)
+        return RuleMutableException(message, code=self.error_code)
 
     def is_mutable(self, obj):
         """

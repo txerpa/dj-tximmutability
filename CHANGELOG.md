@@ -12,6 +12,7 @@
 * Feature - add ``Rule`` attr ``error_code`` to ``ValidationError``.
 * Feature dependency django-models-utils to implement ``FieldTracker``.
 * Test with **pytest**.
+* Own exceptions.
 
 
 ## 1.0.0 (2021-03-29)
