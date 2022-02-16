@@ -2,11 +2,11 @@ from __future__ import absolute_import, unicode_literals
 
 from abc import ABC, abstractmethod
 
-from django.core.exceptions import ValidationError
 from django.db.models.base import ModelBase
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
 
+from tximmutability.exceptions import OrMutableException
 from tximmutability.rule import MutabilityRule
 
 
@@ -61,7 +61,7 @@ class BaseMutableModelAction(ABC):
         self.check_types(self.model_instance, rules_and_coditions)
         for rule_or_condition in rules_and_coditions:
             if not self.rule_or_condition_met(rule_or_condition):
-                raise ValidationError(rule_or_condition.get_error(self.action))
+                raise rule_or_condition.get_error(self.action)
 
     def rule_or_condition_met(self, rule_or_condition, or_obj=None):
         if isinstance(rule_or_condition, Or):
@@ -71,7 +71,7 @@ class BaseMutableModelAction(ABC):
                 if self.rule_or_condition_met(r__or__orc, or_obj=or_obj):
                     return True
                 else:
-                    or_obj.errors.append(r__or__orc.get_error)
+                    or_obj.errors.append(r__or__orc.get_error(self.action))
         else:
             return self.is_rule_met(rule_or_condition, or_obj=or_obj)
         return False
@@ -172,4 +172,5 @@ class Or:
         self.errors = []
 
     def get_error(self, *args):
-        return self.errors
+        if self.errors:
+            return OrMutableException(self.errors)
