@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-14 10:15-0600\n"
+"POT-Creation-Date: 2022-02-15 07:39-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: rule.py:93
+#: rule.py:97
 #, python-brace-format
-msgid "Model rule does not hold for action {action}, field "
+msgid ""
+"The model rule does not hold for action {action}, field \"{self."
+"field_rule}\" must have as values {self.values}"
 msgstr ""
 
 #: rule.py:139
@@ -27,21 +29,21 @@ msgstr ""
 msgid "Field does not exist - {field_name}"
 msgstr ""
 
-#: services.py:40
+#: services.py:39
 #, python-format
 msgid "%s.mutability_rules attribute must be a list."
 msgstr ""
 
-#: services.py:52
+#: services.py:51
 #, python-format
 msgid "%s.mutability_rule attribute must be an instance of \"MutabilityRule\"."
 msgstr ""
 
-#: services.py:91
+#: services.py:90
 msgid "update"
 msgstr ""
 
-#: services.py:138
+#: services.py:137
 msgid "delete"
 msgstr ""
 
