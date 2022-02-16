@@ -60,7 +60,6 @@ class BaseMutabilityModel(BaseAbsModel):
 class BaseModel(BaseMutabilityModel):
     ACCEPTED_VALUE_FUNC = "tx"
 
-    @property
     def condition_property(self):
         return len(self.surname) > 5
 

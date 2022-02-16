@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from tests.mixins import MixinTest
 from tests.testapp.constants import ModelState
 from tests.testapp.models import BaseMutabilityModel
+from tximmutability.exceptions import OrMutableException
 from tximmutability.rule import MutabilityRule
 from tximmutability.services import Or
 
@@ -25,7 +26,7 @@ from tximmutability.services import Or
             Or(MutabilityRule(field_rule="state", values=(ModelState.MUTABLE_STATE,))),
             does_not_raise(),
         ),
-        (Or(), pytest.raises(ValidationError)),
+        (Or(), pytest.raises(OrMutableException)),
         ("a", pytest.raises(TypeError)),
         (1, pytest.raises(TypeError)),
         ([], pytest.raises(TypeError)),
@@ -49,8 +50,8 @@ class TestModelBasic(MixinTest):
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
             error_message='Instance can not be %(action)s, immutable status',
-            conditions=[],
-            exclusion_conditions=[],
+            inst_conditions=[],
+            inst_exclusion_conditions=[],
         ),
     )
 
