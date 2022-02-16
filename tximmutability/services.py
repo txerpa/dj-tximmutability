@@ -172,5 +172,4 @@ class Or:
         self.errors = []
 
     def get_error(self, *args):
-        if self.errors:
-            return OrMutableException(self.errors)
+        return OrMutableException(self.errors)

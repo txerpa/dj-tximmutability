@@ -9,7 +9,9 @@ from tests.testapp.models import BaseModel, BaseMutabilityModel
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__mutable_instance__condition_met(base_mutable_instance, condition_type):
     """
     Test - mutable_instance condition met. The rule will be executed.
@@ -18,7 +20,7 @@ def test__mutable_instance__condition_met(base_mutable_instance, condition_type)
     """
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
-            exclude_fields=('description',), conditions=(condition_type,)
+            exclude_fields=('description',), inst_conditions=(condition_type,)
         ),
     )
     base_mutable_instance._mutability_rules = mutability_rules
@@ -31,7 +33,9 @@ def test__mutable_instance__condition_met(base_mutable_instance, condition_type)
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__immutable_instance__condition_not_met(
     base_immutable_instance, condition_type
 ):
@@ -42,7 +46,7 @@ def test__immutable_instance__condition_not_met(
     """
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
-            exclude_fields=('description',), conditions=(condition_type,)
+            exclude_fields=('description',), inst_conditions=(condition_type,)
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -55,7 +59,9 @@ def test__immutable_instance__condition_not_met(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__immutable_instance__condition_met__unfulfilled_rule(
     base_immutable_instance, condition_type
 ):
@@ -67,7 +73,7 @@ def test__immutable_instance__condition_met__unfulfilled_rule(
     """
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
-            exclude_fields=('description',), conditions=(condition_type,)
+            exclude_fields=('description',), inst_conditions=(condition_type,)
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -81,7 +87,9 @@ def test__immutable_instance__condition_met__unfulfilled_rule(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__immutable_instance__condition_met__fulfiled_rule(
     base_immutable_instance, condition_type
 ):
@@ -92,7 +100,7 @@ def test__immutable_instance__condition_met__fulfiled_rule(
     """
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
-            exclude_fields=('description',), conditions=(condition_type,)
+            exclude_fields=('description',), inst_conditions=(condition_type,)
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -118,7 +126,7 @@ def test__immutable_instance__multi_condition__one_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            conditions=('condition_property', 'condition_func'),
+            inst_conditions=(BaseModel.condition_property, BaseModel.condition_func),
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -144,7 +152,7 @@ def test__mutable_instance__multi_condition__one_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            conditions=('condition_property', 'condition_func'),
+            inst_conditions=(BaseModel.condition_property, BaseModel.condition_func),
         ),
     )
     base_mutable_instance._mutability_rules = mutability_rules
@@ -162,7 +170,9 @@ def test__mutable_instance__multi_condition__one_met(
 
 @pytest.mark.django_db
 @mock.patch("tximmutability.rule.MutabilityRule.check_field_rule")
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__mutable_instance__exclude_condition_met(
     method_mock, base_mutable_instance, condition_type
 ):
@@ -174,7 +184,7 @@ def test__mutable_instance__exclude_condition_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            exclusion_conditions=(condition_type,),
+            inst_exclusion_conditions=(condition_type,),
         ),
     )
     base_mutable_instance._mutability_rules = mutability_rules
@@ -188,7 +198,9 @@ def test__mutable_instance__exclude_condition_met(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__mutable_instance__exclude_condition_not_met(
     base_mutable_instance, condition_type
 ):
@@ -200,7 +212,7 @@ def test__mutable_instance__exclude_condition_not_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            exclusion_conditions=(condition_type,),
+            inst_exclusion_conditions=(condition_type,),
         ),
     )
     base_mutable_instance._mutability_rules = mutability_rules
@@ -214,7 +226,9 @@ def test__mutable_instance__exclude_condition_not_met(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__immutable_instance__exclude_condition_not_met(
     base_immutable_instance, condition_type
 ):
@@ -227,7 +241,7 @@ def test__immutable_instance__exclude_condition_not_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            exclusion_conditions=(condition_type,),
+            inst_exclusion_conditions=(condition_type,),
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -242,7 +256,9 @@ def test__immutable_instance__exclude_condition_not_met(
 
 @pytest.mark.django_db
 @mock.patch("tximmutability.rule.MutabilityRule.check_field_rule")
-@pytest.mark.parametrize("condition_type,", ['condition_property', 'condition_func'])
+@pytest.mark.parametrize(
+    "condition_type,", [BaseModel.condition_property, BaseModel.condition_func]
+)
 def test__immutable_instance__exclude_condition_met(
     method_mock, base_immutable_instance, condition_type
 ):
@@ -254,7 +270,7 @@ def test__immutable_instance__exclude_condition_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            exclusion_conditions=(condition_type,),
+            inst_exclusion_conditions=(condition_type,),
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
@@ -283,7 +299,7 @@ def test__immutability_instance__multi_exclude_condition__one_met(
     mutability_rules = (
         BaseMutabilityModel.get_mutability_rule(
             exclude_fields=('description',),
-            conditions=('condition_property', 'condition_func'),
+            inst_conditions=(BaseModel.condition_property, BaseModel.condition_func),
         ),
     )
     base_immutable_instance._mutability_rules = mutability_rules
