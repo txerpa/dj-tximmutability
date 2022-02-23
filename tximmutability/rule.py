@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-from typing import Tuple
+from typing import NoReturn, Tuple
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import QuerySet
@@ -61,21 +61,27 @@ class MutabilityRule:
 
     def __init__(
         self,
-        field_rule,
-        values: Tuple = (),
-        exclude_fields: Tuple = (),
-        exclude_on_create=True,
-        exclude_on_update=False,
-        exclude_on_delete=False,
-        inst_conditions: Tuple = (),
-        inst_exclusion_conditions: Tuple = (),
-        queryset_conditions: Tuple = (),
-        queryset_exclusion_conditions: Tuple = (),
-        error_message=None,
-        error_code=None,
-    ) -> None:
+        field_rule: str,
+        values: Tuple,
+        exclude_fields: Tuple = None,
+        exclude_on_create: bool = True,
+        exclude_on_update: bool = False,
+        exclude_on_delete: bool = False,
+        inst_conditions: Tuple = None,
+        inst_exclusion_conditions: Tuple = None,
+        queryset_conditions: Tuple = None,
+        queryset_exclusion_conditions: Tuple = None,
+        error_message: str = None,
+        error_code: str = None,
+    ) -> NoReturn:
+        assert bool(field_rule), "MutabilityRule.field_rule can not be empty."
+        assert (
+            isinstance(values, Tuple) and len(values) > 0
+        ), "MutabilityRule.values must have at least one element."
+
         self.field_rule = field_rule
         self.values = values
+
         self.exclude_fields = exclude_fields or ()
         # Actions mutable by.
         self.exclude_on_create = exclude_on_create

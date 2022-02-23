@@ -16,6 +16,40 @@ from tximmutability.services import Or
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
+    "args, kwargs, expectation, exc_val",
+    [
+        (
+            ("", ("draft",)),
+            {},
+            pytest.raises(AssertionError),
+            "MutabilityRule.field_rule can not be empty.",
+        ),
+        (
+            ("estado", ["draft"]),
+            {},
+            pytest.raises(AssertionError),
+            "MutabilityRule.values must have at least one element.",
+        ),
+        (
+            ("estado", ()),
+            {},
+            pytest.raises(AssertionError),
+            "MutabilityRule.values must have at least one element.",
+        ),
+    ],
+)
+def test_rule_initial_args_kwargs(args, kwargs, expectation, exc_val):
+    """
+    Test valid types to pass to model.mutability_rules
+    """
+    with expectation as excinfo:
+        MutabilityRule(*args, **kwargs)
+    if excinfo:
+        assert exc_val in str(excinfo.value)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
     "type_x,expectation",
     [
         (
