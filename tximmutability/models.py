@@ -6,7 +6,7 @@ import logging
 from django.db import models
 from model_utils import FieldTracker
 
-from tximmutability.services import (
+from .services import (
     BaseMutableModelCreate,
     BaseMutableModelDelete,
     BaseMutableModelUpdate,
