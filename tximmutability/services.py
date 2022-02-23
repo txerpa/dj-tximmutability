@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from django.db.models.base import ModelBase
 from django.db.models.query import QuerySet
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 from tximmutability.exceptions import OrMutableException
 from tximmutability.rule import MutabilityRule
@@ -36,7 +36,9 @@ class BaseMutableModelAction(ABC):
     def check_types(self, model_instance, mutability_rules):
         if not isinstance(mutability_rules, (tuple, list)):
             raise TypeError(
-                _('%s.mutability_rules attribute must be a list.' % self.model_name)
+                gettext_lazy(
+                    '%s.mutability_rules attribute must be a list.' % self.model_name
+                )
             )
         for x in filter(lambda e: isinstance(e, Or), mutability_rules):
             self.check_types(model_instance, x.rules_or_conditions)
@@ -47,7 +49,7 @@ class BaseMutableModelAction(ABC):
             )
         ):
             raise TypeError(
-                _(
+                gettext_lazy(
                     '%s.mutability_rule attribute must be an instance of '
                     '\"MutabilityRule\".' % self.model_name
                 )
@@ -87,7 +89,7 @@ class BaseMutableModelAction(ABC):
 
 
 class BaseMutableModelUpdate(BaseMutableModelAction):
-    action = _('update')
+    action = gettext_lazy('update')
 
     def __init__(self, instance_or_queryset, update_fields=None):
         self.errors = {}
@@ -134,7 +136,7 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
 
 
 class BaseMutableModelDelete(BaseMutableModelAction):
-    action = _('delete')
+    action = gettext_lazy('delete')
 
     def is_rule_met(self, rule, or_obj=None):
         """
@@ -147,11 +149,7 @@ class BaseMutableModelDelete(BaseMutableModelAction):
 
 
 class BaseMutableModelCreate(BaseMutableModelAction):
-    action = _('create')
-
-    def __init__(self, *args, **kwargs):
-        self.action = _('create')
-        super().__init__(*args, **kwargs)
+    action = gettext_lazy('create')
 
     def is_rule_met(self, rule, or_obj=None):
         """
