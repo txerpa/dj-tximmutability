@@ -3,5 +3,3 @@ Django==3.2
 wheel==0.29.0
 bump2version==1.0.1
 django-model-utils==4.1.1
-
-

@@ -7,7 +7,8 @@ from typing import Tuple
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import QuerySet
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
-from django.utils.translation import gettext as _
+from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy, ngettext
 
 from tximmutability.exceptions import RuleMutableException
 
@@ -90,15 +91,26 @@ class MutabilityRule:
         self.error_code = error_code
 
     def get_error(self, action):
-        message = (
-            self.error_message.format(
-                action=action, field_rule=self.field_rule, accepted_values=self.values
+        if self.error_message:
+            message = format_lazy(
+                self.error_message,
+                action=action,
+                field_rule=self.field_rule,
+                values=",".join(self.values),
             )
-            if self.error_message
-            else _(
-                f"The model rule does not hold for action {action}, field \"{self.field_rule}\" must have as values {self.values}"
+        else:
+            base_text = ngettext(
+                "The model rule does not hold for action {action}, field \"{field_rule}\" must have as value \"{values}\".",
+                "The model rule does not hold for action {action}, field \"{field_rule}\" must have as values \"{values}\".",
+                len(self.values),
             )
-        )
+            message = format_lazy(
+                base_text,
+                action=action,
+                field_rule=self.field_rule,
+                values=",".join(self.values),
+            )
+
         return RuleMutableException(message, code=self.error_code)
 
     def is_mutable(self, obj):
@@ -138,7 +150,7 @@ class MutabilityRule:
             try:
                 rel = opts.get_field(field_name)
             except FieldDoesNotExist:
-                logger.warning(_(f"Field does not exist - {field_name}"))
+                logger.warning(gettext_lazy(f"Field does not exist - {field_name}"))
                 return True
             if isinstance(rel, (RelatedField, ForeignObjectRel)):
                 # field is forward or reverse relation

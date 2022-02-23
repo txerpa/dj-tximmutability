@@ -6,13 +6,9 @@
 [![pre-commit](https://results.pre-commit.ci/badge/github/bapons/dj-tximmutability/master.svg)](https://results.pre-commit.ci/latest/github/bapons/dj-tximmutability/master)
 [![codecov](https://codecov.io/gh/bapons/dj-tximmutability/branch/master/graph/badge.svg)](https://codecov.io/gh/bapons/dj-tximmutability/)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![black](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/txerpa/dj-tximmutability/blob/master/LICENSE)
 
-<!--[![pypi](https://img.shields.io/pypi/v/dj-tximmutability.svg)](https://pypi.python.org/pypi/dj-tximmutability/)-->
-<!--[![Python versions](https://img.shields.io/pypi/pyversions/dj-tximmutability.svg)](https://pypi.org/project/dj-tximmutability/)-->
-<!--![PyPI - Django Version](https://img.shields.io/pypi/djversions/dj-tximmutability)-->
-<!--[![Python versions](https://img.shields.io/pypi/status/dj-tximmutability.svg)](https://img.shields.io/pypi/status/dj-tximmutability.svg/)-->
-<!--[![Python versions](https://codecov.io/gh/marija_milicevic/dj-tximmutability/branch/master/graph/badge.svg)](https://codecov.io/gh/marija_milicevic/dj-tximmutability)-->
 
 Dj-Immutability is a Django application that allows you to create mutability rules to make the model immutable.
 
