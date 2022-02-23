@@ -10,7 +10,7 @@ from django.db.models.fields.related import ForeignObjectRel, RelatedField
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy, ngettext
 
-from tximmutability.exceptions import RuleMutableException
+from .exceptions import RuleMutableException
 
 logger = logging.getLogger('txmutability')
 

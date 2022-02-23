@@ -6,8 +6,8 @@ from django.db.models.base import ModelBase
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy
 
-from tximmutability.exceptions import OrMutableException
-from tximmutability.rule import MutabilityRule
+from .exceptions import OrMutableException
+from .rule import MutabilityRule
 
 
 class BaseMutableModelAction(ABC):
