@@ -52,3 +52,28 @@ def test_queryset_conditions_on_single_instance(make_immutable_instance_record, 
     instance.name = "foo"
     with pytest.raises(RuleMutableException):
         instance.save()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "name, expectation",
+    [("tx", does_not_raise()), ("_", does_not_raise())],
+)
+def test_queryset_conditions_update_field_rule(
+    make_immutable_instance_record, name, expectation
+):
+    """
+    This test check that `queryset_conditions` attribute does not make any effect over 'field_rule' changes.
+    """
+    BaseModel._mutability_rules = (
+        MutabilityRule(
+            field_rule="state",
+            values=(ModelState.MUTABLE_STATE,),
+            queryset_conditions=(BaseModel.objects.name_tx,),
+        ),
+    )
+    for x in range(10):
+        make_immutable_instance_record(name=name)
+    queryset = BaseModel.objects.all()
+    with expectation:
+        queryset.update(state=ModelState.MUTABLE_STATE)
