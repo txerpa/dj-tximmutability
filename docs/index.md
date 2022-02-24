@@ -4,6 +4,10 @@
 
 Dj-Immutability is a small Django utils (Models Mixin, classes) that allows you to create mutability rules to make the model immutable.
 
+
+### [CONTRIBUTING]( ./CONTRIBUTING.md)
+### [CHANGELOG]( ./CHANGELOG.md)
+
 ## Requirements
 Dj-Tximmutability requires the following:
 
@@ -114,7 +118,7 @@ instance.name = "-"
 instance.save()
 ```
 
-Code that not executes the above rule.
+Code that does not execute the above rule.
 ```python
 queryset = Article.objects.all()
 queryset.update(name="-")  # excluded field
@@ -206,7 +210,7 @@ instance.name = "-"
 instance.save()
 ```
 
-Code that not executes the above rule.
+Code that does not execute the above rule.
 ```python
 # Changes on `state` field has no efect, is the field on which the rule is administered.
 instance = Article.objects.filter(notes="").first()
@@ -278,7 +282,7 @@ instance.name = "-"
 instance.save()
 ```
 
-Code that not executes the above rule.
+Code that does not execute the above rule.
 ```python
 # Changes on `state` field has no efect, is the field on which the rule is administered.
 instance = Article.objects.exclude(notes="").first()
@@ -354,7 +358,7 @@ instance.name = "-"
 instance.save()
 ```
 
-Code that not executes the above rule.
+Code that does not execute the above rule.
 ```python
 # Changes on `state` field has no efect, is the field on which the rule is administered.
 queryset_0 = Article.objects.filter(notes="")
@@ -428,7 +432,7 @@ instance.name = "-"
 instance.save()  # For a single instance `queryset_exclusion_conditions` has no effect.
 ```
 
-Code that not executes the above rule.
+Code that does not execute the above rule.
 ```python
 # Changes on `state` field has no efect, is the field on which the rule is administered.
 queryset_0 = Article.objects.exclude(notes="")
@@ -548,14 +552,3 @@ or
 ```bash
 (myenv) $ pytest tests
 ```
-
-### [CONTRIBUTING]( ../CONTRIBUTING.md)
-### [CHANGELOG]( ../CHANGELOG.md)
-
-
-<!--
-##Features
-
-TODO
-
--->

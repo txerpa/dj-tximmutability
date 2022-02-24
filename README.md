@@ -52,5 +52,5 @@ class Article(MutableModel):
     )
 ```
 
-## [Contributing]( ./CONTRIBUTING.md)
-## [Changelog]( ./CHANGELOG.md)
+## [Contributing]( docs/CONTRIBUTING.md)
+## [Changelog]( docs/CHANGELOG.md)
