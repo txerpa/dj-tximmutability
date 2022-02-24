@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 
 from tests.testapp.constants import ModelState
-from tximmutability.models import MutableModel
+from tximmutability.models import MutableModel, MutableQuerySet
 from tximmutability.rule import MutabilityRule
 
 
@@ -38,6 +38,11 @@ class ModelDepthFoo(BaseAbsModel):
     _mutability_rules = (BaseAbsModel.get_mutability_rule(),)
 
 
+class InvoiceQuerySet(MutableQuerySet, models.QuerySet):
+    def name_tx(self):
+        return self.count() == self.filter(name="tx").count()
+
+
 class BaseMutabilityModel(BaseAbsModel):
     DEFAULT_NAME = "Mutability name"
     DEFAULT_SURNAME = "Mutability surname"
@@ -52,6 +57,8 @@ class BaseMutabilityModel(BaseAbsModel):
     own_related_field = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True
     )
+
+    objects = InvoiceQuerySet.as_manager()
 
     class Meta:
         abstract = True

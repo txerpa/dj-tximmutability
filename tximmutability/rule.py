@@ -199,7 +199,7 @@ class MutabilityRule:
         return condition(self.obj)
 
     def _check_query_codition(self, condition):
-        return self.obj.__getattribute__(condition.__name__)
+        return self.obj.__getattribute__(condition.__name__)()
 
     def _all_conditions_met(self):
         """

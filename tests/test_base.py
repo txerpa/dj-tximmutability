@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from tests.mixins import MixinTest
 from tests.testapp.constants import ModelState
 from tests.testapp.models import BaseMutabilityModel
-from tximmutability.exceptions import OrMutableException
+from tximmutability.exceptions import OrMutableException, RuleMutableException
 from tximmutability.rule import MutabilityRule
 from tximmutability.services import Or
 
@@ -46,6 +46,26 @@ def test_rule_initial_args_kwargs(args, kwargs, expectation, exc_val):
         MutabilityRule(*args, **kwargs)
     if excinfo:
         assert exc_val in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_error_code(base_immutable_instance):
+    """
+    Test valid types to pass to model.mutability_rules
+    """
+    error_code = "0001"
+    base_immutable_instance._mutability_rules = (
+        MutabilityRule(
+            field_rule="state",
+            values=(ModelState.MUTABLE_STATE,),
+            error_code=error_code,
+        ),
+    )
+    base_immutable_instance.name = "test"
+    with pytest.raises(RuleMutableException) as excinfo:
+        base_immutable_instance.save()
+
+    assert error_code == excinfo.value.code
 
 
 @pytest.mark.django_db
