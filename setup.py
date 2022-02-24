@@ -46,9 +46,6 @@ if sys.argv[-1] == 'tag':
 with open('README.md', 'r') as f:
     readme = f.read()
 
-with open('./docs/CHANGELOG.md', 'r') as f:
-    history = f.read().replace('# Changelog', '')
-
 setup(
     name='dj-tximmutability',
     version=version,
