@@ -10,7 +10,14 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/txerpa/dj-tximmutability/blob/master/LICENSE)
 
 
+
 Dj-Immutability is a Django application that allows you to create mutability rules to make the model immutable.
+
+---
+## [Contributing]( docs/CONTRIBUTING.md)
+## [Changelog]( docs/CHANGELOG.md)
+
+---
 
 ## Supports
 
@@ -20,7 +27,7 @@ Dj-Immutability is a Django application that allows you to create mutability rul
 
 ## Documentation
 
-The full documentation is at https://bapons.github.io/dj-tximmutability/.
+The full [documentation](https://bapons.github.io/dj-tximmutability/).
 
 
 ## Installation
@@ -51,6 +58,3 @@ class Article(MutableModel):
         )
     )
 ```
-
-## [Contributing]( docs/CONTRIBUTING.md)
-## [Changelog]( docs/CHANGELOG.md)

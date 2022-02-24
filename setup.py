@@ -47,7 +47,7 @@ with open('README.md', 'r') as f:
     readme = f.read()
 
 with open('docs/CHANGELOG.md', 'r') as f:
-    history = f.read().replace('.. :changelog:', '')
+    history = f.read().replace('# Changelog', '')
 
 setup(
     name='dj-tximmutability',
