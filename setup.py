@@ -46,7 +46,7 @@ if sys.argv[-1] == 'tag':
 with open('README.md', 'r') as f:
     readme = f.read()
 
-with open('CHANGELOG.md', 'r') as f:
+with open('docs/CHANGELOG.md', 'r') as f:
     history = f.read().replace('.. :changelog:', '')
 
 setup(
