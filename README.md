@@ -31,7 +31,7 @@ pip install git+https://github.com/txerpa/dj-tximmutability.git@master#egg=dj-tx
 
 ## Example
 
-### Minimal implementation.
+### Getting Started.
 
 ```python
 from tximmutability.models import MutableModel
