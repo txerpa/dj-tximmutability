@@ -49,66 +49,6 @@ class Article(MutableModel):
     )
 ```
 
-### Exclude fields.
-
-In some cases, it is necessary to exclude some fields from `MutabilityRule`.
-This means that this model is mutable only when `state == 'draft'`, but if you modify only the excluded fields,
-the instance would be mutable for those fields.
-```python
-...
-from tximmutability.models import MutableModel
-from tximmutability.rule import MutabilityRule
-
-class Article(MutableModel):
-    name = models.CharField(max_length=120)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    content = models.TextField()
-    state = models.ChoiceField(choices=['draft', 'published'])
-    notes = models.TextField( blank=True, default='')
-    ...
-
-    mutability_rules = (
-        MutabilityRule(
-            'state',
-            values=('draft',),
-            exclude_fields=('created', 'modified')
-        ),
-    )
-```
-
-### Custom error message.
-
-`MutabilityRule` can return a custom message error,
-adding `error_message` kwargs.
-
-Also `error_message` accepts custom [string formatting](https://docs.python.org/3/library/string.html#string-formatting)
-by variable substitutions. Accepted variables `[{action} {field_rule} {values}]`.
-
-```python
-...
-from django.utils.translation import gettext_lazy
-
-from tximmutability.models import MutableModel
-from tximmutability.rule import MutabilityRule
-
-class Article(MutableModel):
-    name = models.CharField(max_length=120)
-    content = models.TextField()
-    state = models.ChoiceField(choices=['draft', 'published'])
-    notes = models.TextField( blank=True, default='')
-    ...
-
-    mutability_rules = (
-        MutabilityRule(
-            'state',
-            values=('draft',),
-            error_message=gettext_lazy("Article can not be {action}, {field_rule} is not \"{values}\"")
-        ),
-    )
-```
-
-
 ## Rule options.
 
 
@@ -500,7 +440,7 @@ queryset_1.update(name="-")
 ```
 
 ---
-###error_message
+### error_message
 Expect an **String**.
 It accepts custom [string formatting](https://docs.python.org/3/library/string.html#string-formatting)
 by variable substitutions. Accepted variables `[{action} {field_rule} {values}]`.
@@ -535,7 +475,7 @@ class Article(MutableModel):
 ```
 
 ---
-###error_code
+### error_code
 If the Rule fails it return `RuleMutableException` or `OrMutableException`, both inherit from ValidationError.
 This has an attribute (code), where it can be handled later on the catch error.
 Therefore, `error_code` provides the ability to pass the value to both exceptions.
