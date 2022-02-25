@@ -156,7 +156,7 @@ Exclude rule on delete instance.
 ### inst_conditions
 This attribute, effects when the action comes from an instance,
 is not checked for a queryset.
-It is a tuple of conditional methods that return booleans.
+It is a tuple of conditional methods that return Boolean.
 All conditions must be met to run the rule.
 If one condition not met, the rule would not be executed,
 and therefore the instance would continue with the action.
@@ -224,10 +224,10 @@ instance.save()
 ### inst_exclusion_conditions
 This attribute, effects when the action comes from an **instance**,
 is not checked for a **queryset**.
-It is a tuple of conditional methods that return booleans.
-No conditions must be met to execute the rule.
-If one condition is met, the rule would not be executed,
-and therefore the instance would continue with the action.
+It is a tuple of conditional methods that return Boolean.
+No conditions must be met to execute the rule. 
+If a condition is met, the rule will not be executed 
+and thus the instance would continue with the action.
 
 Opossite of `inst_conditions`.
 
@@ -292,9 +292,9 @@ instance.save()
 
 ---
 ### queryset_conditions
-This attribute, effects when the action comes from an Queryset,
+This attribute, effects when the action comes from a Queryset,
 is not checked for a single instance.
-It is a tuple of conditional methods that return booleans.
+It is a tuple of conditional methods that return Boolean.
 Those methods must come from the model manager.
 All conditions must be met to run the rule.
 If one condition not met, the rule would not be executed,
@@ -364,9 +364,9 @@ queryset_1.update(name="-")  # `queryset_conditions` not met
 
 ---
 ### queryset_exclusion_conditions
-This attribute, effects when the action comes from an Queryset,
+This attribute, effects when the action comes from a Queryset,
 is not checked for a single instance.
-It is a tuple of conditional methods that return booleans.
+It is a tuple of conditional methods that return Boolean.
 Those methods must come from the model manager.
 No conditions must be met to execute the rule.
 If one condition is met, the rule would not be executed,
@@ -436,7 +436,7 @@ queryset_1.update(name="-")
 
 ---
 ### error_message
-Expect an **String**.
+Expect a **String**.
 It accepts custom [string formatting](https://docs.python.org/3/library/string.html#string-formatting)
 by variable substitutions. Accepted variables `[{action} {field_rule} {values}]`.
 
