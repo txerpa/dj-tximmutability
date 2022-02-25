@@ -1,7 +1,5 @@
 # Dj-Tximmutability
 
----
-
 [![Python package](https://github.com/txerpa/dj-tximmutability/actions/workflows/django.yml/badge.svg)](https://github.com/txerpa/dj-tximmutability/actions)
 [![pre-commit](https://results.pre-commit.ci/badge/github/txerpa/dj-tximmutability/master.svg)](https://results.pre-commit.ci/latest/github/txerpa/dj-tximmutability/master)
 [![codecov](https://codecov.io/gh/txerpa/dj-tximmutability/branch/master/graph/badge.svg)](https://codecov.io/gh/txerpa/dj-tximmutability/)
@@ -10,14 +8,10 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/txerpa/dj-tximmutability/blob/master/LICENSE)
 
 
-
 Dj-Immutability is a Django application that allows you to create mutability rules to make the model immutable.
 
----
-## [Contributing]( docs/CONTRIBUTING.md)
-## [Changelog]( docs/CHANGELOG.md)
-
----
+* [**Contributing**]( docs/CONTRIBUTING.md)
+* [**Changelog**]( docs/CHANGELOG.md)
 
 ## Supports
 
