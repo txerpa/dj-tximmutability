@@ -57,13 +57,14 @@ class Article(MutableModel):
 
 
 ### field_rule *
-Model field name
+Model field name.
+
 * **Required**
 * **Type**: String
 
 ---
 ### values *
-Define value  of `field_rule` when it can be mutable.
+Tuple of values of `field_rule` by which it can be mutable.
 
 * **Required**
 * **Tuple** - at least one element.
@@ -78,8 +79,6 @@ Tuple of fields to be ignored.
 
 #### Example
 
-This example provides a rule that will be executed for all querysets
-and for the instance that not met any `inst_exclusion_conditions`
 ```python
 ...
 from django.utils.translation import gettext_lazy
@@ -122,7 +121,7 @@ Code that does not execute the above rule.
 ```python
 queryset = Article.objects.all()
 queryset.update(name="-")  # excluded field
-queryset.update(state="-")  # is the field on which the rule is administered.
+queryset.update(state="-")  # is the field in which the rule is managed.
 ...
 instance = Article.objects.first()
 instance.notes = "-"
@@ -168,8 +167,6 @@ and therefore the instance would continue with the action.
 
 #### Example
 
-This example provides a rule that will be executed for all querysets
-and for the instance that not met any `inst_exclusion_conditions`
 ```python
 ...
 from django.utils.translation import gettext_lazy
@@ -212,7 +209,7 @@ instance.save()
 
 Code that does not execute the above rule.
 ```python
-# Changes on `state` field has no efect, is the field on which the rule is administered.
+# Changes on `state` field has no efect, is the field on which the rule is managed.
 instance = Article.objects.filter(notes="").first()
 instance.state = "draft"  # `state` field is excluded
 instance.save()
@@ -240,8 +237,6 @@ Opossite of `inst_conditions`.
 
 #### Example
 
-This example provides a rule that will be executed for all querysets
-and for the instance that not met any `inst_exclusion_conditions`
 ```python
 ...
 from django.utils.translation import gettext_lazy
@@ -284,7 +279,7 @@ instance.save()
 
 Code that does not execute the above rule.
 ```python
-# Changes on `state` field has no efect, is the field on which the rule is administered.
+# Changes on `state` field has no efect, is the field on which the rule is managed.
 instance = Article.objects.exclude(notes="").first()
 instance.state="draft"
 instance.save()
@@ -313,8 +308,6 @@ Similar to `inst_conditions`, but for queryset.
 
 #### Example
 
-This example provides a rule that will be executed for all single
-instances and for the querysets thats met all `queryset_conditions`
 ```python
 ...
 from django.utils.translation import gettext_lazy
@@ -360,7 +353,7 @@ instance.save()
 
 Code that does not execute the above rule.
 ```python
-# Changes on `state` field has no efect, is the field on which the rule is administered.
+# Changes on `state` field has no efect, is the field on which the rule is managed.
 queryset_0 = Article.objects.filter(notes="")
 queryset_0.update(state="draft")
 ...
@@ -387,8 +380,6 @@ Similar to `inst_exclusion_conditions`, but for queryset.
 
 #### Example
 
-This example provides a rule that will be executed for all single
-instances and for the querysets thats not met any `queryset_exclusion_conditions`
 ```python
 ...
 from django.utils.translation import gettext_lazy
@@ -434,7 +425,7 @@ instance.save()  # For a single instance `queryset_exclusion_conditions` has no 
 
 Code that does not execute the above rule.
 ```python
-# Changes on `state` field has no efect, is the field on which the rule is administered.
+# Changes on `state` field has no efect, is the field on which the rule is managed.
 queryset_0 = Article.objects.exclude(notes="")
 queryset_0.update(state="draft")
 ...
