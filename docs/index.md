@@ -225,8 +225,8 @@ instance.save()
 This attribute, effects when the action comes from an **instance**,
 is not checked for a **queryset**.
 It is a tuple of conditional methods that return Boolean.
-No conditions must be met to execute the rule. 
-If a condition is met, the rule will not be executed 
+No conditions must be met to execute the rule.
+If a condition is met, the rule will not be executed
 and thus the instance would continue with the action.
 
 Opossite of `inst_conditions`.
