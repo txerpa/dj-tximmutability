@@ -38,25 +38,17 @@ class MutabilityRule:
             otherwise <False>. Default False
         exclude_on_delete <Bool>: To exclude this rule on delete set <True>,
             otherwise <False>. Default False
-        condition <Tuple>. Tuple of Strings of instance method/property that
+        inst_conditions <Tuple>: Tuple of instance methods that return <Bool>.
+            Methods to check before applying this rule.
+        inst_exclusion_conditions <Tuple>. Tuple of instance methods that
             return <Bool>. Methods to check before applying this rule.
-        exclusion_conditions <Tuple>. Tuple of Strings of instance
-            method/property that return <Bool>. Methods to check before
-            applying this rule.
+        queryset_conditions <Tuple>: Tuple of modelmanager methods that return <Bool>.
+            Methods to check before applying this rule.
+        queryset_exclusion_conditions <Tuple>: Tuple of modelmanager methods that
+            return <Bool>. Methods to check before applying this rule.
         error_message  <String>: Message passed on raise.
         error_code <String>: Error code for ValidationError in case rule fails.
 
-    Examples:
-        - Only invoice note can be changed if invoice is not in draft state.
-        MutabilityRule('state', values=('draft',), exclude_fields=('note',))
-        - Entry can not be deleted (but can be updated) if related invoice is
-            validated
-        MutabilityRule('invoice__state', values=('draft',),
-            exclude_on_update=True)
-        - Invoice line cannot be updated or deleted nor new line can be added
-            if invoice is not in draft or budget state
-        MutabilityRule('invoice__state', values=('draft', 'budget'),
-        exclude_on_create=False)
     """
 
     def __init__(
@@ -222,7 +214,7 @@ class MutabilityRule:
 
     def _any_conditions_met(self):
         """
-        Check if all conditions have been met
+        Check if any conditions have been met
         """
         if self.is_queryset:
             return any(
