@@ -77,3 +77,21 @@ def test_queryset_conditions_update_field_rule(
     queryset = BaseModel.objects.all()
     with expectation:
         queryset.update(state=ModelState.MUTABLE_STATE)
+
+
+@pytest.mark.django_db
+def test_update_queryset_force_mutability(make_immutable_instance_record):
+    """
+    This test check that `queryset_conditions` attribute does not make any effect over 'field_rule' changes.
+    """
+    BaseModel._mutability_rules = (
+        MutabilityRule(
+            field_rule="state",
+            values=(ModelState.MUTABLE_STATE,),
+        ),
+    )
+    for x in range(10):
+        make_immutable_instance_record(name="tx")
+    queryset = BaseModel.objects.all()
+    with does_not_raise():
+        queryset.update(force_mutability=True, name="foo1")
