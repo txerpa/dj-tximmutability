@@ -129,10 +129,12 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         fields_to_check = (
             self.fields_names - exclude_db_column_names - {rule.field_rule}
         )
-
+        result = True
         if fields_to_check:
-            return rule.is_mutable(obj=self.model_instance or self.queryset)
-        return True
+            result, failed_instances = rule.is_mutable(
+                obj=self.model_instance or self.queryset
+            )
+        return result
 
 
 class BaseMutableModelDelete(BaseMutableModelAction):
@@ -143,9 +145,10 @@ class BaseMutableModelDelete(BaseMutableModelAction):
         Delete of the instance is allowed if rule by self allow delete or
         if instance is in mutable state
         """
-        return rule.exclude_on_delete or rule.is_mutable(
-            obj=self.model_instance or self.queryset
-        )
+        if rule.exclude_on_delete:
+            return True
+        result, _ = rule.is_mutable(obj=self.model_instance or self.queryset)
+        return result
 
 
 class BaseMutableModelCreate(BaseMutableModelAction):
@@ -156,9 +159,11 @@ class BaseMutableModelCreate(BaseMutableModelAction):
         Create is allowed if rule byself allow creation or if model is in
         mutable state
         """
-        return rule.exclude_on_create or rule.is_mutable(
-            obj=self.model_instance or self.queryset
-        )
+
+        if rule.exclude_on_create:
+            return True
+        result, _ = rule.is_mutable(obj=self.model_instance or self.queryset)
+        return result
 
 
 class Or:
