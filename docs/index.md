@@ -512,8 +512,17 @@ except RuleMutableException as exc:
         # Do whaterever, send email, execute task, etc.
 ```
 ---
+## Exclude rules.
+In some cases, you will need to ignore the model rules.
 
+```python
+instance.save(force_mutability=True, ...)
 
+```
+```python
+instance.delete(force_mutability=True, ...)
+```
+---
 
 ## Running Tests
 
