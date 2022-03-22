@@ -88,6 +88,9 @@ class MutabilityRule:
         self.error_message = error_message
         self.error_code = error_code
 
+    def __str__(self):
+        return f"{self.__class__.__name__}[{self.field_rule}={self.values}]"
+
     def get_error(self, action):
         if self.error_message:
             message = format_lazy(
@@ -111,7 +114,7 @@ class MutabilityRule:
 
         return RuleMutableException(message, code=self.error_code)
 
-    def is_mutable(self, obj):
+    def is_mutable(self, obj, action):
         """
         Check if model obj is in mutable state.
         Model obj is in mutable state if field defined by rule has
@@ -140,7 +143,7 @@ class MutabilityRule:
             for instance in self.obj:
                 if not self.check_field_rule(instance):
                     logger.warning(
-                        f"Instance {instance}-pk[{instance.pk}] is not mutable."
+                        f"Instance {instance}-pk[{instance.pk}] is not mutable for [{action}] action. {self.__str__()}"
                     )
                     failed_instances.append(instance)
             is_mutable = False if failed_instances else True

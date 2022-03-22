@@ -132,7 +132,7 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         result = True
         if fields_to_check:
             result, failed_instances = rule.is_mutable(
-                obj=self.model_instance or self.queryset
+                self.model_instance or self.queryset, self.action
             )
         return result
 
@@ -147,7 +147,7 @@ class BaseMutableModelDelete(BaseMutableModelAction):
         """
         if rule.exclude_on_delete:
             return True
-        result, _ = rule.is_mutable(obj=self.model_instance or self.queryset)
+        result, _ = rule.is_mutable(self.model_instance or self.queryset, self.action)
         return result
 
 
@@ -162,7 +162,7 @@ class BaseMutableModelCreate(BaseMutableModelAction):
 
         if rule.exclude_on_create:
             return True
-        result, _ = rule.is_mutable(obj=self.model_instance or self.queryset)
+        result, _ = rule.is_mutable(self.model_instance or self.queryset, self.action)
         return result
 
 
