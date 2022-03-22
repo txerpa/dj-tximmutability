@@ -119,6 +119,16 @@ class TestModelBasic(MixinTest):
         base_immutable_instance._mutability_rules = self.mutability_rules
         return base_immutable_instance
 
+    def test_update_force_mutability(self, immutable_instance):
+        immutable_instance.name = "test"
+        with does_not_raise():
+            immutable_instance.save(force_mutability=True)
+
+    def test_delete_force_mutability(self, immutable_instance):
+        immutable_instance.name = "test"
+        with does_not_raise():
+            immutable_instance.delete(force_mutability=True)
+
     def test_delete_instance_when_model_is_immutable(self, immutable_instance):
         self.delete_instance_when_model_is_immutable(immutable_instance)
 
