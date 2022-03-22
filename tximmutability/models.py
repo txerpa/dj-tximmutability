@@ -24,6 +24,10 @@ class AbstractFieldTracker(FieldTracker):
 
 
 class MutableQuerySet(models.QuerySet):
+    def __init__(self, *args, **kwargs):
+        self.force_mutability = kwargs.pop("force_mutability", False)
+        super().__init__(*args, **kwargs)
+
     def _pre_bulk_update_validate_immutability(self, *args, **kwargs):
         model = self.model
         update_fields = kwargs
@@ -34,8 +38,19 @@ class MutableQuerySet(models.QuerySet):
                 ).validate(model._mutability_rules)
 
     def update(self, *args, **kwargs):
-        self._pre_bulk_update_validate_immutability(*args, **kwargs)
+        if not getattr(self, 'force_mutability', False):
+            self._pre_bulk_update_validate_immutability(*args, **kwargs)
         return super().update(*args, **kwargs)
+
+    def bulk_update(self, objs, fields, batch_size=None, force_mutability=None):
+        self.force_mutability = force_mutability or False
+        super().bulk_update(objs, fields, batch_size=batch_size)
+        self.force_mutability = False
+
+    def _clone(self):
+        c = super()._clone()
+        c.force_mutability = self.force_mutability or False
+        return c
 
 
 class MutableModel(models.Model):
@@ -69,8 +84,8 @@ class MutableModel(models.Model):
         super().__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        tx_force = kwargs.pop("force", False)
-        if not tx_force:
+        force_mutability = kwargs.pop("force_mutability", False)
+        if not force_mutability:
             if not self.pk:
                 BaseMutableModelCreate(self).validate(self._mutability_rules)
             else:
@@ -82,8 +97,8 @@ class MutableModel(models.Model):
         Delete object if there is no restrictions
         To force delete set param force to True
         """
-        tx_force = kwargs.pop('force', False)
-        if not tx_force:
+        force_mutability = kwargs.pop('force_mutability', False)
+        if not force_mutability:
             BaseMutableModelDelete(self).validate(self._mutability_rules)
         super(MutableModel, self).delete(*args, **kwargs)
 

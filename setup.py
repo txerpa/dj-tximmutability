@@ -57,7 +57,7 @@ setup(
     url='https://github.com/txerpa/dj-tximmutability',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["Django>=2.2,<=3.2", "django-model-utils==4.1.1"],
+    install_requires=["Django>=2.2,<3.3.*", "django-model-utils==4.2.0"],
     python_requires=">=3.8",
     license='MIT License',
     zip_safe=False,
