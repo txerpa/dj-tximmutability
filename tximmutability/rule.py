@@ -128,16 +128,25 @@ class MutabilityRule:
         if not self._all_conditions_met():
             # Not all conditions met. It does not continue checking this
             # rule.
-            return True
+            return True, None
 
         if self._any_conditions_met():
             # Some conditions met from exclude_conditions. It does not
             # continue checking this rule.
-            return True
+            return True, None
         if self.is_queryset:
-            return all(map(lambda instance: self.check_field_rule(instance), self.obj))
+            # return all(map(lambda instance: self.check_field_rule(instance), self.obj))
+            failed_instances = []
+            for instance in self.obj:
+                if not self.check_field_rule(instance):
+                    logger.warning(
+                        f"Instance {instance}-pk[{instance.pk}] is not mutable."
+                    )
+                    failed_instances.append(instance)
+            is_mutable = False if failed_instances else True
+            return is_mutable, failed_instances
         else:
-            return self.check_field_rule(obj)
+            return self.check_field_rule(obj), None
 
     def check_field_rule(self, model_instance, field_parts=None):
         field_parts = field_parts or self.field_rule.split('__')
