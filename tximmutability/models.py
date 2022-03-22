@@ -37,7 +37,8 @@ class MutableQuerySet(models.QuerySet):
                     self, update_fields=update_fields.keys()
                 ).validate(model._mutability_rules)
 
-    def update(self, *args, **kwargs):
+    def update(self, force_mutability=None, *args, **kwargs):
+        self.force_mutability = force_mutability or False
         if not getattr(self, 'force_mutability', False):
             self._pre_bulk_update_validate_immutability(*args, **kwargs)
         return super().update(*args, **kwargs)
