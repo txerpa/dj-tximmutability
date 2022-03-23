@@ -112,7 +112,9 @@ class MutabilityRule:
                 values=",".join(self.values),
             )
 
-        return RuleMutableException(message, code=self.error_code)
+        return RuleMutableException(
+            message, code=self.error_code, params={"instances": self.failed_instances}
+        )
 
     def is_mutable(self, obj, action):
         """
@@ -127,6 +129,7 @@ class MutabilityRule:
         """
         self.obj = obj
         self.is_queryset = isinstance(obj, QuerySet)
+        self.failed_instances = []
 
         if not self._all_conditions_met():
             # Not all conditions met. It does not continue checking this
@@ -137,25 +140,20 @@ class MutabilityRule:
             # Some conditions met from exclude_conditions. It does not
             # continue checking this rule.
             return True, None
-        if self.is_queryset:
-            # return all(map(lambda instance: self.check_field_rule(instance), self.obj))
-            failed_instances = []
-            for instance in self.obj:
-                if not self.check_field_rule(instance):
-                    logger.warning(
-                        f"Instance {instance}-pk[{instance.pk}] is not mutable for [{action}] action. {self.__str__()}"
-                    )
-                    failed_instances.append(instance)
-            is_mutable = False if failed_instances else True
-            return is_mutable, failed_instances
-        else:
-            return self.check_field_rule(obj), None
+
+        for instance in self.obj if isinstance(obj, QuerySet) else [self.obj]:
+            if not self.check_field_rule(instance):
+                logger.warning(
+                    f"Instance {instance}-pk[{instance.pk}] is not mutable for [{action}] action. {self.__str__()}"
+                )
+                self.failed_instances.append(instance)
+        is_mutable = False if self.failed_instances else True
+        return is_mutable, self.failed_instances
 
     def check_field_rule(self, model_instance, field_parts=None):
         field_parts = field_parts or self.field_rule.split('__')
         opts = model_instance._meta
 
-        # walk relationships
         for field_name in field_parts:
             try:
                 rel = opts.get_field(field_name)
