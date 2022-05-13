@@ -12,9 +12,7 @@ def get_metadata(package, field):
     """
     Return package data as listed in `__{field}__` in `init.py`.
     """
-    init_py = codecs.open(
-        os.path.join(package, '__init__.py'), encoding='utf-8'
-    ).read()
+    init_py = codecs.open(os.path.join(package, '__init__.py'), encoding='utf-8').read()
     match = re.search(
         "^__{}__ = ['\"]([^'\"]+)['\"]".format(field), init_py, re.MULTILINE
     )
@@ -48,9 +46,6 @@ if sys.argv[-1] == 'tag':
 with open('README.md', 'r') as f:
     readme = f.read()
 
-with open('CHANGELOG.md', 'r') as f:
-    history = f.read().replace('.. :changelog:', '')
-
 setup(
     name='dj-tximmutability',
     version=version,
@@ -62,8 +57,8 @@ setup(
     url='https://github.com/txerpa/dj-tximmutability',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["Django>=2.2,<=3", "django-model-utils==4.1.1"],
-    python_requires=">=3.6",
+    install_requires=["Django>=2.2,<3.3.*", "django-model-utils==4.2.0"],
+    python_requires=">=3.8",
     license='MIT License',
     zip_safe=False,
     keywords=['django', 'tximmutability', 'immutability', 'mutability'],
@@ -71,12 +66,6 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.8',
-        'Framework :: Django :: 1.9',
-        'Framework :: Django :: 1.10',
-        'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.0',
-        'Framework :: Django :: 2.1',
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
         'Framework :: Django :: 3.1',
@@ -86,10 +75,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Utilities',
     ],
 )

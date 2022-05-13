@@ -1,34 +1,24 @@
-# coding=utf-8
+from __future__ import absolute_import, unicode_literals
 
 from django.db import models
 
 from tests.testapp.constants import ModelState
-from tximmutability.models import MutableModel
+from tximmutability.models import MutableModel, MutableQuerySet
 from tximmutability.rule import MutabilityRule
 
 
-class AbstractImmutableModel(MutableModel):
-    name = models.CharField(
-        null=False, max_length=50, default='Immutable Model'
-    )
-    surname = models.CharField(
-        null=False, max_length=100, default='Immutable Model'
-    )
-    state = models.CharField(max_length=50, default=ModelState.IMMUTABLE_STATE)
+class BaseAbsModel(MutableModel):
+    class Meta:
+        abstract = True
 
     @staticmethod
     def get_mutability_rule(**kwargs):
         field = kwargs.pop('field', None)
         field_name = 'state' if field is None else field
-        return MutabilityRule(
-            field_name, values=(ModelState.MUTABLE_STATE,), **kwargs
-        )
-
-    class Meta:
-        abstract = True
+        values = kwargs.pop('values', (ModelState.MUTABLE_STATE,))
+        return MutabilityRule(field_name, values=values, **kwargs)
 
     def saved_value(self, field):
-        # self.refresh_from_db()
         hints = {'instance': self}
         db_instance_qs = (
             self.__class__._base_manager.db_manager(hints=hints)
@@ -38,96 +28,55 @@ class AbstractImmutableModel(MutableModel):
         return getattr(db_instance_qs.get(), 'state')
 
 
-class BaseImmutableModel(AbstractImmutableModel):
+class ModelDepthFoo(BaseAbsModel):
+    name = models.CharField(null=False, max_length=50, default='Initial Foo')
+    state = models.CharField(max_length=50, default=ModelState.MUTABLE_STATE)
+    related_field = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    _mutability_rules = (BaseAbsModel.get_mutability_rule(),)
+
+
+class InvoiceQuerySet(MutableQuerySet, models.QuerySet):
+    def name_tx(self):
+        return self.count() == self.filter(name="tx").count()
+
+
+class BaseMutabilityModel(BaseAbsModel):
+    DEFAULT_NAME = "Mutability name"
+    DEFAULT_SURNAME = "Mutability surname"
+
+    name = models.CharField(null=False, max_length=50, default=DEFAULT_NAME)
+    surname = models.CharField(null=False, max_length=100, default=DEFAULT_SURNAME)
+    state = models.CharField(max_length=50, default=ModelState.IMMUTABLE_STATE)
     description = models.CharField(null=True, max_length=250)
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            exclude_fields=('description',),
-            error_message='Instance can not be %(action)s, immutable status',
-        ),
-    )
-
-
-class ImmutableModelAllowDelete(AbstractImmutableModel):
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(exclude_on_delete=True),
-    )
-
-
-class ImmutableModelAllowUpdate(AbstractImmutableModel):
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(exclude_on_update=True),
-    )
-
-
-class ImmutableRelationModel(AbstractImmutableModel):
     related_field = models.ForeignKey(
-        'BaseImmutableModel', on_delete=models.CASCADE, null=True, blank=True
+        ModelDepthFoo, on_delete=models.CASCADE, null=True, blank=True
     )
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            field='related_field__state'
-        ),
+    own_related_field = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True
     )
 
+    objects = InvoiceQuerySet.as_manager()
 
-class ImmutableMultiForwardRelModel(AbstractImmutableModel):
+    class Meta:
+        abstract = True
+
+
+class BaseModel(BaseMutabilityModel):
+    ACCEPTED_VALUE_FUNC = "tx"
+
+    def condition_property(self):
+        return len(self.surname) > 5
+
+    def condition_func(self):
+        return self.name == self.ACCEPTED_VALUE_FUNC
+
+
+class ModelFooReverse(BaseAbsModel):
+    name = models.CharField(null=False, max_length=50, default='Immutable Model')
+    state = models.CharField(max_length=50, default=ModelState.IMMUTABLE_STATE)
     related_field = models.ForeignKey(
-        'ModelWithRelation', on_delete=models.CASCADE, null=True, blank=True
-    )
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            field='related_field__related_field__state'
-        ),
-    )
-
-
-class ImmutableReverseRelationModel(AbstractImmutableModel):
-    related_field = models.ForeignKey(
-        'ImmutableMultiReverseRelModel',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            field='modelwithrelation__state'
-        ),
-    )
-
-
-class ImmutableMultiReverseRelModel(AbstractImmutableModel):
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            field='immutablereverserelationmodel__' 'modelwithrelation__state'
-        ),
-    )
-
-
-class ImmutableMultiMixRelModel(AbstractImmutableModel):
-    related_field = models.ForeignKey(
-        'BaseImmutableModel', on_delete=models.CASCADE, null=True, blank=True
-    )
-    mutability_rules = (
-        AbstractImmutableModel.get_mutability_rule(
-            field='related_field__immutablerelationmodel__state'
-        ),
-        AbstractImmutableModel.get_mutability_rule(
-            field='modelwithrelation__related_field__state'
-        ),
-    )
-
-
-class ModelWithRelation(AbstractImmutableModel):
-    related_field = models.ForeignKey(
-        'ImmutableReverseRelationModel',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-    related_field2 = models.ForeignKey(
-        'ImmutableMultiMixRelModel',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+        "BaseModel", on_delete=models.CASCADE, null=True, blank=True
     )
