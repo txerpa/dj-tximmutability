@@ -1,5 +1,4 @@
 # -*- coding: utf-8
-from __future__ import absolute_import, unicode_literals
 
 import os
 
@@ -23,3 +22,5 @@ USE_L10N = True
 MIDDLEWARE_CLASSES = ()
 
 SECRET_KEY = "not needed"
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
