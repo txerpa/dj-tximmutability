@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 from tests.mixins import MixinTest
 from tests.testapp.constants import ModelState
-from tests.testapp.models import BaseMutabilityModel
+from tests.testapp.models import BaseMutabilityModel, ModelDepthFoo
 from tximmutability.exceptions import OrMutableException, RuleMutableException
 from tximmutability.rule import MutabilityRule
 from tximmutability.services import Or
@@ -121,11 +121,13 @@ class TestModelBasic(MixinTest):
 
     def test_update_force_mutability(self, immutable_instance):
         immutable_instance.name = "test"
+        related_field_x = ModelDepthFoo()
+        related_field_x.save()
+        immutable_instance.related_field = related_field_x
         with does_not_raise():
             immutable_instance.save(force_mutability=True)
 
     def test_delete_force_mutability(self, immutable_instance):
-        immutable_instance.name = "test"
         with does_not_raise():
             immutable_instance.delete(force_mutability=True)
 

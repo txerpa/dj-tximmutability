@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import pytest
 from django.core.exceptions import ValidationError
 
+from tests.testapp.models import ModelDepthFoo
+
 
 class MixinTest:
     def delete_instance_when_model_is_immutable(self, immutable_instance):
@@ -29,6 +31,10 @@ class MixinTest:
 
     def update_field_when_model_is_mutable(self, mutable_instance, field_name):
         assert getattr(mutable_instance, field_name) != 'Foo'
+        related_field_x = ModelDepthFoo()
+        related_field_x.save()
+        mutable_instance.related_field = related_field_x
         setattr(mutable_instance, field_name, "Foo")
         mutable_instance.save()
         assert getattr(mutable_instance, field_name) == 'Foo'
+        assert getattr(mutable_instance, 'related_field') == related_field_x
