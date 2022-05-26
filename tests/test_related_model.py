@@ -16,6 +16,24 @@ from tests.testapp.models import (
 
 
 @pytest.mark.django_db
+def test_queryset_conditions_update_field_rule(base_immutable_instance):
+    """
+    This test check that `queryset_conditions` attribute does not make any effect over 'field_rule' changes.
+    """
+    base_immutable_instance._mutability_rules = (
+        BaseMutabilityModel.get_mutability_rule(
+            exclude_fields=('related_field',),
+        ),
+    )
+    related_field_x = ModelDepthFoo()
+    related_field_x.save()
+
+    base_immutable_instance.related_field = related_field_x
+    with does_not_raise():
+        base_immutable_instance.save()
+
+
+@pytest.mark.django_db
 class TestRelation(MixinTest):
     model = BaseModel
     mutability_rules = (

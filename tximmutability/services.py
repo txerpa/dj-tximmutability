@@ -105,6 +105,8 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         """
         map fk field to column db, ex: django => book.autor || DB --> book.autor_id
         """
+        if bool(self.queryset):
+            return rule.exclude_fields
         return {instance._meta.get_field(f).column for f in rule.exclude_fields}
 
     def is_rule_met(self, rule, or_obj=None):
