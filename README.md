@@ -21,7 +21,7 @@ Dj-Immutability is a Django application that allows you to create mutability rul
 
 ## Documentation
 
-The full [documentation](https://bapons.github.io/dj-tximmutability/).
+The full [documentation](https://txerpa.github.io/dj-tximmutability/).
 
 
 ## Installation
