@@ -11,6 +11,9 @@ repos:
   - id: check-yaml
   - id: check-toml
   - id: trailing-whitespace
+    exclude: ^.*\.cfg$
+    language: python
+    types: [ text ]
 - repo: https://github.com/psf/black
   rev: 22.3.0
   hooks:

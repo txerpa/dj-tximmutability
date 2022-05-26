@@ -3,7 +3,7 @@ from contextlib import nullcontext as does_not_raise
 import pytest
 
 from tests.testapp.constants import ModelState
-from tests.testapp.models import BaseModel
+from tests.testapp.models import BaseModel, ModelDepthFoo
 from tximmutability.exceptions import RuleMutableException
 from tximmutability.rule import MutabilityRule
 
@@ -82,7 +82,8 @@ def test_queryset_conditions_update_field_rule(
 @pytest.mark.django_db
 def test_update_queryset_force_mutability(make_immutable_instance_record):
     """
-    This test check that `queryset_conditions` attribute does not make any effect over 'field_rule' changes.
+    This test check that `force mutability` attribute omit the rule, and therefore does not rise an error.
+    Example: queryset.update(force_mutability=True, ...)
     """
     BaseModel._mutability_rules = (
         MutabilityRule(
@@ -95,3 +96,26 @@ def test_update_queryset_force_mutability(make_immutable_instance_record):
     queryset = BaseModel.objects.all()
     with does_not_raise():
         queryset.update(force_mutability=True, name="foo1")
+
+
+@pytest.mark.django_db
+def test_update_queryset_exclude_fields_fk(make_immutable_instance_record):
+    """
+    This test check that the fields (fk) inside `exclude_fields' will ignore the rule on mutation.
+    """
+    BaseModel._mutability_rules = (
+        MutabilityRule(
+            field_rule="state",
+            exclude_fields=('related_field',),
+            values=(ModelState.MUTABLE_STATE,),
+        ),
+    )
+    for x in range(10):
+        make_immutable_instance_record(name="tx")
+
+    related_field = ModelDepthFoo()
+    related_field.save()
+
+    queryset = BaseModel.objects.all()
+    with does_not_raise():
+        queryset.update(related_field=related_field)
