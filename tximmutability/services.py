@@ -101,13 +101,21 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
             update_fields or self.model_instance.tracker.changed().keys()
         )
 
-    def _exclude_db_column_names(self, instance, rule):
+    def _get_fields_names_to_exclude(self, instance, rule):
         """
         map fk field to column db, ex: django => book.autor || DB --> book.autor_id
         """
-        if bool(self.queryset):
-            return rule.exclude_fields
-        return {instance._meta.get_field(f).column for f in rule.exclude_fields}
+        fields_names = (
+            {f for f in rule.exclude_fields}
+            if bool(self.queryset)
+            else {instance._meta.get_field(f).column for f in rule.exclude_fields}
+        )
+        fr = rule.field_rule
+        if "__" not in fr:  # is not field related to fk field.
+            fields_names.add(
+                fr if bool(self.queryset) else instance._meta.get_field(fr).column
+            )
+        return fields_names
 
     def is_rule_met(self, rule, or_obj=None):
         """
@@ -126,11 +134,9 @@ class BaseMutableModelUpdate(BaseMutableModelAction):
         # Todo iterar todos
         instance = self.model_instance or self.queryset[0]
 
-        exclude_db_column_names = self._exclude_db_column_names(instance, rule)
+        exclude_db_column_names = self._get_fields_names_to_exclude(instance, rule)
         # Clean fields to check.
-        fields_to_check = (
-            self.fields_names - exclude_db_column_names - {rule.field_rule}
-        )
+        fields_to_check = self.fields_names - exclude_db_column_names
         result = True
         if fields_to_check:
             result, failed_instances = rule.is_mutable(
