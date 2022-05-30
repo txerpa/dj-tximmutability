@@ -94,7 +94,7 @@ class MutabilityRule:
                 self.error_message,
                 action=action,
                 field_rule=self.field_rule,
-                values=",".join(self.values),
+                values=self.values,
             )
         else:
             base_text = ngettext(
