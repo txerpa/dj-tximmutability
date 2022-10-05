@@ -37,15 +37,15 @@ class MutableQuerySet(models.QuerySet):
                 ).validate(model._mutability_rules)
 
     def update(self, force_mutability=None, *args, **kwargs):
-        self.force_mutability = force_mutability or False
-        if not getattr(self, 'force_mutability', False):
+        if not getattr(self, 'force_mutability', force_mutability):
             self._pre_bulk_update_validate_immutability(*args, **kwargs)
         return super().update(*args, **kwargs)
 
     def bulk_update(self, objs, fields, batch_size=None, force_mutability=None):
+        force_mutability_original_value = self.force_mutability
         self.force_mutability = force_mutability or False
         super().bulk_update(objs, fields, batch_size=batch_size)
-        self.force_mutability = False
+        self.force_mutability = force_mutability_original_value
 
     def _clone(self):
         c = super()._clone()
