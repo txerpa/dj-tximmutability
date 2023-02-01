@@ -2,7 +2,20 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+
+## [2.0.4]
+
+### Added
+* Tests with Python 3.11
+### Fixed
+* Django requirements
+* isort version 5.10 cause an issue with pre-commit, updated to 5.12
+* force_mutabililty flag in MutableQuerySet.update()
+### Removed
+* Drop support for Django < 3.2
+
+
+## [2.0.0]
 
 ### Added
 * Add support for Python 3.10

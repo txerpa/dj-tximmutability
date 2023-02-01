@@ -47,6 +47,9 @@ output/*/index.html
 # Sphinx
 docs/_build
 
+# Python virtualenv
+venv
+
 !.gitignore
 # !.github
 # !.pre-commit-config.yaml

@@ -11,8 +11,8 @@ Dj-Immutability is a small Django utils (Models Mixin, classes) that allows you 
 ## Requirements
 Dj-Tximmutability requires the following:
 
-* Python: (3.8, 3.9, 3.10)
-* [Django](https://github.com/django/django): (2.2, 3.0, 3.1, 3.2)
+* Python: (3.8, 3.9, 3.10, 3.11)
+* [Django](https://github.com/django/django): (3.2)
 * [django-model-utils](https://github.com/jazzband/django-model-utils) == 4.1.1
 
 ## Instalation
@@ -530,14 +530,10 @@ Does the code actually work?
 
 * Install all the python interpreters you need via [pyenv](https://github.com/pyenv/pyenv). E.g.:
 ```bash
+pyenv install 3.11.1
 pyenv install 3.10.2
 pyenv install 3.9.2
 pyenv install 3.8.8
-```
-
-* Make them global with:
-```bash
-pyenv global 3.9.2 3.8.8 3.10.2
 ```
 
 * Run tests
