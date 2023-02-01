@@ -99,6 +99,29 @@ def test_update_queryset_force_mutability(make_immutable_instance_record):
 
 
 @pytest.mark.django_db
+def test_bulk_update_queryset_force_mutability(make_immutable_instance_record):
+    """
+    This test check that `force mutability` attribute omit the rule, and therefore does not rise an error.
+    Example: queryset.bulk_update(force_mutability=True, ...)
+    """
+    BaseModel._mutability_rules = (
+        MutabilityRule(
+            field_rule="state",
+            values=(ModelState.MUTABLE_STATE,),
+        ),
+    )
+    for x in range(10):
+        make_immutable_instance_record(name="tx")
+
+    objs = BaseModel.objects.all()
+    for obj in objs:
+        obj.name = 'foo1'
+
+    with does_not_raise():
+        BaseModel.objects.bulk_update(objs, ['name'], force_mutability=True)
+
+
+@pytest.mark.django_db
 def test_update_queryset_exclude_fields_fk(make_immutable_instance_record):
     """
     This test check that the fields (fk) inside `exclude_fields' will ignore the rule on mutation.
