@@ -1,6 +1,6 @@
 # Dj-Tximmutability
 
-[![Python package](https://github.com/txerpa/dj-tximmutability/actions/workflows/django.yml/badge.svg)](https://github.com/txerpa/dj-tximmutability/actions)
+[![CI](https://github.com/txerpa/dj-tximmutability/actions/workflows/django.yml/badge.svg?branch=master)](https://github.com/txerpa/dj-tximmutability/actions/)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/txerpa/dj-tximmutability/master.svg)](https://results.pre-commit.ci/latest/github/txerpa/dj-tximmutability/master)
 [![codecov](https://codecov.io/gh/txerpa/dj-tximmutability/branch/master/graph/badge.svg)](https://codecov.io/gh/txerpa/dj-tximmutability/)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
