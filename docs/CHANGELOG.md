@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.5]
+
+### Fixed
+* django-model-utils changed from ==4.2.0 to >=4.2.0
+
 
 ## [2.0.4]
 
