@@ -2,7 +2,7 @@ default_language_version:
     python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.5.0
   hooks:
   - id: check-docstring-first
   - id: check-added-large-files
@@ -17,16 +17,16 @@ repos:
     language_version: python3
     types: [ text ]
 - repo: https://github.com/psf/black
-  rev: 22.3.0
+  rev: 24.3.0
   hooks:
   - id: black
     language_version: python3
 - repo: https://github.com/pycqa/isort
-  rev: 5.12.0
+  rev: 5.13.2
   hooks:
   - id: isort
 - repo: https://github.com/pycqa/flake8
-  rev: 4.0.1
+  rev: 7.0.0
   hooks:
   - id: flake8
     args: [--config, setup.cfg]
